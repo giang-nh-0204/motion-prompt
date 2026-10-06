@@ -1,0 +1,46 @@
+@font-face{font-family:'DM Sans';src:url('/fonts/DMSans-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Epilogue;src:url('/fonts/Epilogue-Black.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+:root{--background:#dfe4f2;--foreground:#080909;font-family:'DM Sans',Arial,sans-serif;font-weight:400;color:var(--foreground);background:var(--background);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh}
+a{color:inherit;text-decoration:none}
+a:focus-visible{outline:2px solid currentColor;outline-offset:6px}
+.footer{position:relative;min-height:100vh;padding-top:6.54vw}
+.jobs{margin-left:8.65vw;width:25vw}
+.tag{display:inline-flex;align-items:center;border-radius:100px;background:#f7f8fa;padding:.39vw .61vw;font-size:.88vw;line-height:1.2;height:1.9vw;white-space:nowrap}
+.headline{font-family:Epilogue,Arial,sans-serif;font-weight:900;font-size:1.66vw;line-height:1.2;letter-spacing:0}
+.job-title{display:block;margin-top:1.45vw}
+.footer-nav{display:flex;flex-direction:column;align-items:flex-start;gap:.93vw;margin-top:1.3vw;font-size:1.075vw;line-height:1.35}
+.logo{position:absolute;left:40.33vw;top:7.7vw;width:17vw}
+.logo svg{display:block;width:100%;height:auto}
+.contact{position:absolute;left:74.3vw;top:6.54vw}
+.contact-links{display:flex;flex-direction:column;align-items:flex-start;margin-top:1.45vw;white-space:nowrap}
+.note{margin:1.05vw 0 0;font-size:.733vw;line-height:1.4;white-space:nowrap}
+.socials{display:flex;align-items:center;gap:1.43vw;margin-top:1.61vw}
+.socials span,.socials img{display:block;width:1.71vw;height:1.71vw}
+
+.footer{isolation:isolate;overflow:hidden}
+.footer-background{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.footer-background video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+
+@media(max-width:700px){
+  :root{--background:#f0eefa;background:var(--background)}
+  body{background:var(--background)}
+  .footer{display:flex;flex-direction:column;gap:36px;min-height:100svh;padding:40px 24px 0;background:var(--background)}
+  .logo{position:static;order:0;align-self:flex-start;width:210px;max-width:75%;margin-bottom:4px}
+  .jobs{order:1;margin:0;width:100%}
+  .tag{height:30px;padding:6px 11px;font-size:14px}
+  .headline{font-size:clamp(22px,6.3vw,30px);line-height:1.25}
+  .job-title,.contact-links{margin-top:19px}
+  .footer-nav{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-top:20px;font-size:17px;line-height:1.4}
+  .footer-nav span{display:flex;align-items:center;min-height:44px}
+  .contact{position:static;order:2;width:100%}
+  .contact-links{gap:4px;white-space:normal}
+  .note{max-width:34ch;margin:16px 0 0;font-size:14px;line-height:1.5;white-space:normal}
+  .socials{gap:18px;margin-top:20px}
+  .socials span{display:flex;align-items:center;justify-content:center;width:44px;height:44px}
+  .socials img{width:30px;height:30px}
+  .socials span:first-child{margin-left:-7px}
+  .footer-background{position:relative;inset:auto;order:3;z-index:auto;flex:none;align-self:center;width:calc(100% + 48px);aspect-ratio:4/3;margin-top:-16px}
+  .footer-background video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+}

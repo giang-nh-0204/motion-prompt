@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Planet Jumping</title>
+<link rel="icon" href="data:,">
+<style>
+/* ===================== FONTS ===================== */
+@font-face{font-family:'SF Pro';src:local('SF Pro Text Regular'),local('SFProText-Regular'),local('SF Pro Regular');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'SF Pro';src:local('SF Pro Text Bold'),local('SFProText-Bold'),local('SF Pro Bold');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'SF Pro Thin';src:local('SF Pro Display Thin'),local('SFProDisplay-Thin'),local('SF Pro Thin');font-weight:100;font-style:normal;font-display:swap}
+@font-face{font-family:'Aalto';src:local('Aalto'),local('Aalto Regular');font-weight:400;font-style:normal;font-display:swap}
+
+:root{font-family:'SF Pro',Arial,sans-serif;color:#fff;background:#090807;font-synthesis:none}
+
+/* ===================== LAYOUT ===================== */
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+html,body,button,a,.portal{cursor:none!important}
+
+.experience{position:relative;width:100%;height:100%;min-height:540px;overflow:hidden;background:#0a0908}
+.backgrounds,.background,.shade{position:absolute;inset:0;width:100%;height:100%}
+.background{object-fit:cover;opacity:0;transition:opacity .8s ease}
+.background.is-visible{opacity:1}
+.shade{z-index:1;background:linear-gradient(to bottom,transparent 52%,rgba(0,0,0,.88) 100%);pointer-events:none}
+
+.chrome{position:absolute;z-index:4;transition:opacity .45s ease,filter .45s ease}
+.experience.is-transitioning .chrome{opacity:0;filter:blur(8px);pointer-events:none}
+
+/* header */
+.header{left:clamp(18px,1.95vw,28px);right:clamp(18px,1.95vw,28px);top:clamp(18px,3.1vh,28px);
+  display:flex;justify-content:space-between;align-items:center}
+.header-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav{display:flex;align-items:center;height:42px;padding:4px 5px;border:1px solid rgba(255,255,255,.45);
+  background:rgba(255,255,255,.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:999px}
+.nav a{color:#fff;text-decoration:none;padding:8px 19px;border-radius:999px;line-height:1}
+.nav a.active{background:#fff;color:#000}
+.menu{height:42px;padding:0 20px;border:0;border-radius:999px;background:#fff;color:#000;cursor:pointer}
+
+/* sidebar */
+.planet-list{left:clamp(18px,1.95vw,28px);top:50%;transform:translateY(-43%);
+  display:flex;flex-direction:column;gap:6px;font-size:16px}
+.planet-item{display:flex;align-items:center;min-height:20px}
+.planet-item.active{font-size:18px;font-weight:700;gap:8px}
+.planet-item.active:before{content:'';width:16px;height:16px;border-radius:50%;background:#fff}
+
+/* ---------- portal: the button is only the hit target + size reference ---------- */
+.portal-wrap{left:50%;top:50%;width:min(320px,31vw);transform:translate(-50%,-54%)}
+.portal-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:16px;opacity:0}
+.portal-heading strong{font-size:18px;margin-left:8px}
+.portal{position:relative;display:block;width:100%;aspect-ratio:320/350;padding:0;border:0;
+  border-radius:90px;background:transparent;cursor:pointer;box-shadow:none;
+  -webkit-tap-highlight-color:transparent}
+
+/* ---------- portal layer: real media, composited by the GPU, shaped by clip-path ---------- */
+.portal-layer{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;
+  clip-path:inset(50%);-webkit-clip-path:inset(50%)}
+.portal-layer>*{position:absolute;inset:0;width:100%;height:100%}
+.portal-layer video,.portal-layer img{object-fit:cover;display:block;visibility:hidden}
+.portal-fill{background:#030303}
+.portal-shade{background:linear-gradient(to bottom,transparent 52%,rgba(0,0,0,.88) 100%);opacity:0}
+.portal-layer[data-media="video"] #portal-video,
+.portal-layer[data-media="image"] #portal-image,
+.portal-layer[data-media="transition"] #transition-video{visibility:visible}
+.portal-layer[data-media="transition"] .portal-shade{opacity:1}
+
+/* the last frame of each journey becomes the new backdrop — painted once, never per frame */
+.scene-canvas{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;
+  display:none;pointer-events:none}
+.scene-canvas.is-frozen{display:block}
+
+/* content */
+.planet-content{left:clamp(28px,4vw,58px);right:clamp(28px,3vw,44px);bottom:clamp(24px,3vh,30px);
+  display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.planet-content h1{font-family:Aalto,'Arial Narrow',sans-serif;font-size:clamp(128px,21.8vw,314px);
+  font-weight:400;line-height:.72;margin:0 0 -.04em;letter-spacing:0;transform:translateX(-32px);opacity:0}
+.planet-content dl{width:min(447px,34vw);margin:0;font-size:16px}
+.fact{display:grid;grid-template-columns:138px 1fr;gap:18px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.48);opacity:0}
+.fact:last-child{border-bottom:0}
+.fact dt{font-weight:700}
+.fact dd{margin:0}
+
+/* misc */
+.loading{position:absolute;z-index:12;left:50%;bottom:30px;transform:translateX(-50%);opacity:0;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:opacity .2s}
+.experience.is-loading .loading{opacity:.8}
+.experience.is-transitioning .header,.experience.is-transitioning .planet-list{opacity:1;filter:none;pointer-events:auto}
+.experience.is-transitioning .shade{opacity:1}
+.experience.is-committing .background{transition:none!important}
+
+/* ===================== PRELOADER ===================== */
+.preloader{position:absolute;inset:0;z-index:20;background:#000;overflow:hidden}
+.preloader video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.preloader-shade{position:absolute;inset:auto 0 0;height:35%;background:linear-gradient(to bottom,transparent,#000)}
+.preloader.is-background{z-index:0}
+.preloader.is-background .preloader-shade{opacity:0}
+
+.floating-logo{position:fixed;z-index:22;left:50%;top:50%;width:59px;height:58px;transform:translate(-50%,-50%);
+  transition:left 2s cubic-bezier(.16,1,.3,1),top 2s cubic-bezier(.16,1,.3,1),
+             width 2s cubic-bezier(.16,1,.3,1),height 2s cubic-bezier(.16,1,.3,1),
+             transform 2s cubic-bezier(.16,1,.3,1)}
+.floating-logo.is-flying{will-change:left,top,width,height,transform}
+.floating-logo.is-docked{left:clamp(18px,1.95vw,28px);top:clamp(18px,3.1vh,28px);width:37px;height:36px;transform:none}
+.floating-logo.is-settled{z-index:5}
+
+.preloader-count{position:fixed;z-index:22;left:50%;bottom:clamp(22px,3.1vh,28px);display:flex;align-items:flex-end;
+  gap:4px;transform:translateX(-50%);font-family:'SF Pro',Arial,sans-serif;line-height:1}
+.preloader-count>span:first-child{font-family:'SF Pro Thin','SF Pro',Arial,sans-serif;font-size:64px;font-weight:100}
+.preloader-count .percent{font-size:24px;padding-bottom:4px}
+.preloader-count.is-leaving{animation:preload-count-out .75s cubic-bezier(.22,1,.36,1) both}
+@keyframes preload-count-out{to{opacity:0;filter:blur(7px);transform:translate(-50%,-34px)}}
+body:not(.preload-complete) .custom-cursor{opacity:0!important}
+
+/* ===================== CURSOR (transform-only, never triggers layout) ===================== */
+.custom-cursor{display:block;position:fixed;left:0;top:0;z-index:100;width:1px;height:1px;
+  pointer-events:none;opacity:0;transition:opacity .2s ease}
+.custom-cursor.is-visible{opacity:1}
+.cursor-dot,.cursor-orbit,.cursor-label{position:absolute;left:0;top:0;will-change:transform}
+.cursor-dot{width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff}
+/* The orbit element only carries the JS position. The visible ring is a child
+   layer so its hover scale can never multiply the translation (the individual
+   `scale` property is applied on top of `transform`, which pushed the ring
+   away from the pointer by 16% of its screen coordinates). */
+.cursor-orbit{width:36px;height:36px;margin:-18px 0 0 -18px}
+.cursor-orbit::before{content:'';position:absolute;inset:0;box-sizing:border-box;border-radius:50%;
+  border:1px solid #fff;background:rgba(255,255,255,.4);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.custom-cursor.is-enter .cursor-orbit::before{transform:scale(1.16)}
+.cursor-label{top:26px;font:16px/1.2 'SF Pro',Arial,sans-serif;white-space:nowrap;opacity:0;
+  translate:-50% -4px;transition:opacity .2s ease,translate .3s cubic-bezier(.22,1,.36,1)}
+.custom-cursor.is-enter .cursor-label{opacity:1;translate:-50% 0}
+
+/* ===================== ENTRANCE / SWITCH ===================== */
+body:not(.intro-ready) .header,
+body:not(.intro-ready) .planet-list{opacity:0}
+.intro-ready .header{animation:reveal-down .9s cubic-bezier(.22,1,.36,1) .1s both}
+.intro-ready .planet-list{animation:reveal-side .9s cubic-bezier(.22,1,.36,1) .65s both}
+.content-revealing .planet-content h1{animation:title-rise 1.05s cubic-bezier(.16,1,.3,1) both}
+.content-revealing .fact{animation:fact-rise .72s cubic-bezier(.22,1,.36,1) both}
+.content-revealing .fact:nth-child(1){animation-delay:.52s}
+.content-revealing .fact:nth-child(2){animation-delay:.68s}
+.content-revealing .fact:nth-child(3){animation-delay:.84s}
+.content-revealing .fact:nth-child(4){animation-delay:1s}
+.mask-revealing .portal-heading{animation:portal-caption .85s cubic-bezier(.22,1,.36,1) both}
+.planet-list.is-switching .planet-item{animation:menu-row .58s cubic-bezier(.22,1,.36,1) both}
+.planet-list.is-switching .planet-item:nth-child(1){animation-delay:.02s}
+.planet-list.is-switching .planet-item:nth-child(2){animation-delay:.05s}
+.planet-list.is-switching .planet-item:nth-child(3){animation-delay:.08s}
+.planet-list.is-switching .planet-item:nth-child(4){animation-delay:.11s}
+.planet-list.is-switching .planet-item:nth-child(5){animation-delay:.14s}
+.planet-list.is-switching .planet-item:nth-child(6){animation-delay:.17s}
+.planet-list.is-switching .planet-item:nth-child(7){animation-delay:.2s}
+.planet-list.is-switching .planet-item:nth-child(8){animation-delay:.23s}
+.planet-list.is-switching .planet-item.active:before{animation:active-dot .55s cubic-bezier(.22,1,.36,1) .18s both}
+
+@keyframes reveal-down{from{opacity:0;filter:blur(8px);transform:translateY(-18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes reveal-side{from{opacity:0;filter:blur(8px);transform:translate(-20px,-43%)}to{opacity:1;filter:blur(0);transform:translate(0,-43%)}}
+@keyframes title-rise{from{opacity:0;filter:blur(12px);transform:translate(-32px,42px)}to{opacity:1;filter:blur(0);transform:translate(-32px,0)}}
+@keyframes fact-rise{from{opacity:0;filter:blur(7px);transform:translateY(18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes portal-caption{from{opacity:0;filter:blur(7px);transform:translateY(22px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes menu-row{from{opacity:.35;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes active-dot{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes title-rise-mobile{from{opacity:0;filter:blur(12px);transform:translateY(42px)}to{opacity:1;filter:blur(0);transform:none}}
+
+/* ===================== RESPONSIVE ===================== */
+@media(max-width:900px){
+  .nav{display:none}
+  .portal-wrap{width:min(300px,48vw)}
+  .planet-content h1{font-size:clamp(105px,24vw,190px)}
+  .planet-content dl{width:43vw}
+  .fact{grid-template-columns:110px 1fr}
+  .planet-list{font-size:14px}
+  .planet-item.active{font-size:16px}
+}
+@media(max-width:640px){
+  .experience{min-height:600px}
+  .planet-list{display:none}
+  .portal-wrap{top:44%;width:min(260px,66vw)}
+  .planet-content{left:18px;right:18px;bottom:18px;display:block}
+  .planet-content h1{font-size:clamp(98px,30vw,160px);margin-bottom:20px;transform:none}
+  .content-revealing .planet-content h1{animation-name:title-rise-mobile}
+  .planet-content dl{width:100%;font-size:13px}
+  .fact{grid-template-columns:92px 1fr;padding:5px 0}
+  .portal-heading{font-size:14px}
+  .portal-heading strong{font-size:16px}
+  .menu{height:38px}
+  .portal{border-radius:70px}
+}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="experience" data-planet="mars">
+  <div class="backgrounds" aria-hidden="true">
+    <!-- These sit under the preloader / frozen frame and are never seen, so they
+         must not steal bandwidth from the videos that are: preload="none". -->
+    <video id="mars-background" class="background is-visible" muted playsinline preload="none"
+      src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3c83091e-4046-4fd6-adbb-2edb728be79a.mp4"></video>
+    <video id="earth-background" class="background" muted playsinline preload="none"
+      src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4"></video>
+    <video id="venus-background" class="background" muted playsinline preload="none"
+      src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4"></video>
+  </div>
+
+  <div class="preloader" id="preloader" aria-label="Loading Mars">
+    <!-- src is assigned from JS once the file is fully in memory (see loadBlob) -->
+    <video id="preloader-video" muted playsinline preload="none"
+      data-src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4"></video>
+    <div class="preloader-shade"></div>
+  </div>
+
+  <img class="floating-logo is-flying" id="floating-logo"
+    src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg" alt="Ubernatural">
+
+  <div class="preloader-count" id="preloader-count" aria-live="polite">
+    <span id="preloader-value">0</span><span class="percent">%</span>
+  </div>
+
+  <canvas id="scene-canvas" class="scene-canvas" aria-hidden="true"></canvas>
+  <div class="shade" aria-hidden="true"></div>
+
+  <header class="header chrome">
+    <div class="header-actions">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="active" href="#about">About</a><a href="#explore">Explore</a><a href="#planets">Planets</a>
+      </nav>
+      <button class="menu" type="button">Menu</button>
+    </div>
+  </header>
+
+  <aside class="planet-list chrome" aria-label="Planets"></aside>
+
+  <div class="portal-layer" id="portal-layer" data-media="video" aria-hidden="true">
+    <div class="portal-fill"></div>
+    <video id="portal-video" muted playsinline preload="none"
+      data-src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4"></video>
+    <img id="portal-image" alt=""
+      data-src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg">
+    <video id="transition-video" muted playsinline preload="auto"></video>
+    <div class="portal-shade"></div>
+  </div>
+
+  <section class="portal-wrap chrome" aria-label="Next destination">
+    <div class="portal-heading">
+      <span>Next:</span>
+      <span><span id="next-number">[03]</span> <strong id="next-name">Earth</strong></span>
+    </div>
+    <button class="portal" id="portal" type="button" aria-label="Travel to Earth"></button>
+  </section>
+
+  <section class="planet-content chrome" aria-live="polite">
+    <h1 id="planet-title">MARS</h1>
+    <dl id="facts"></dl>
+  </section>
+
+  <div class="loading" aria-hidden="true">Preparing orbit…</div>
+  <div class="custom-cursor" aria-hidden="true">
+    <span class="cursor-orbit"></span><span class="cursor-dot"></span><span class="cursor-label">Enter</span>
+  </div>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+/* ===================== assets ===================== */
+var BASE='https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P';
+var TO_MARS =BASE+'/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4';
+var TO_EARTH=BASE+'/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4';
+var TO_VENUS=BASE+'/b30f64d9-1637-477a-83df-d0fc6461a422.mp4';
+var MERCURY =BASE+'/d6fb8b6b-c15e-4aaa-9cf7-45bbb5e33372.jpg';
+
+/* ===================== network =====================
+   The stutter came from starving the videos: five files (~59 MB) were
+   streaming at once while the preloader tried to play 15.8 MB in 3 s.
+   Now each file downloads alone, fully into memory, and only then plays —
+   a video playing from a Blob can never stall waiting for the network.
+   The CDN sends Access-Control-Allow-Origin: *, so this works from file:// too. */
+var blobs={};   /* url -> Promise<playable url> */
+var ready={};   /* url -> playable url, once in memory */
+
+function loadBlob(url,onProgress){
+  if(blobs[url]) return blobs[url];
+  blobs[url]=fetch(url,{mode:'cors'}).then(function(res){
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    var total=Number(res.headers.get('Content-Length'))||0;
+    var type=res.headers.get('Content-Type')||'video/mp4';
+    if(!res.body||!res.body.getReader||!total) return res.blob();
+    var reader=res.body.getReader();
+    var chunks=[],got=0;
+    function pump(){
+      return reader.read().then(function(step){
+        if(step.done) return new Blob(chunks,{type:type});
+        chunks.push(step.value);
+        got+=step.value.length;
+        if(onProgress) onProgress(Math.min(1,got/total));
+        return pump();
+      });
+    }
+    return pump();
+  }).then(function(blob){
+    ready[url]=URL.createObjectURL(blob);
+    return ready[url];
+  }).catch(function(){
+    ready[url]=url;             /* fetch unavailable: fall back to streaming */
+    return url;
+  });
+  return blobs[url];
+}
+function playable(url){return ready[url]||url;}
+function delay(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function within(promise,ms){return Promise.race([promise,delay(ms)]);}
+
+/* what the visitor needs next, strictly in order */
+function prefetchRest(){
+  loadBlob(TO_EARTH)
+    .then(function(){return loadBlob(TO_VENUS);})
+    .then(function(){if(!portalImage.getAttribute('src')) portalImage.src=MERCURY;});
+}
+
+/* ===================== data ===================== */
+var planets=['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
+
+var states={
+  mars:{name:'Mars',next:'Earth',number:'[03]',portal:TO_EARTH,background:'mars-background',
+    facts:[['Distance:','About 228 million km (1.5 astronomical units).'],
+           ['Year:','One Martian year is equal to 687 Earth days.'],
+           ['Temperature:','Around -60 °C, dropping to -125 °C at the poles in winter.'],
+           ['Atmosphere:','Very thin, consisting of 95% carbon dioxide, with frequent dust storms.']]},
+  earth:{name:'Earth',next:'Venus',number:'[02]',portal:TO_VENUS,background:'earth-background',
+    facts:[['Distance:','149.6 million km from the Sun.'],
+           ['Year:','365.25 Earth days.'],
+           ['Temperature:','Average surface temperature around 15 °C.'],
+           ['Atmosphere:','Mostly nitrogen and oxygen, supporting life and liquid water.']]},
+  venus:{name:'Venus',next:'Mercury',number:'[06]',image:MERCURY,background:'venus-background',
+    facts:[['Distance:','108.2 million km from the Sun.'],
+           ['Year:','225 Earth days.'],
+           ['Temperature:','Around 465 °C — the hottest planet in the Solar System.'],
+           ['Atmosphere:','Extremely dense, mostly carbon dioxide, with clouds of sulfuric acid.']]}
+};
+
+var current='mars';
+var busy=false;
+
+/* ===================== nodes ===================== */
+var $=function(id){return document.getElementById(id);};
+var experience=document.querySelector('.experience');
+var planetList=document.querySelector('.planet-list');
+var factsEl=$('facts');
+var titleEl=$('planet-title');
+var nextName=$('next-name');
+var nextNumber=$('next-number');
+var portal=$('portal');
+var layer=$('portal-layer');
+var portalVideo=$('portal-video');
+var portalImage=$('portal-image');
+var transitionVideo=$('transition-video');
+var sceneCanvas=$('scene-canvas');
+var sceneCtx=sceneCanvas.getContext('2d');
+var preloader=$('preloader');
+var preloaderVideo=$('preloader-video');
+var preloaderCount=$('preloader-count');
+var preloaderValue=$('preloader-value');
+var logo=$('floating-logo');
+var cursor=document.querySelector('.custom-cursor');
+var cursorDot=cursor.querySelector('.cursor-dot');
+var cursorOrbit=cursor.querySelector('.cursor-orbit');
+var cursorLabel=cursor.querySelector('.cursor-label');
+var reduceMotion=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+
+/* ===================== portal state ===================== */
+var expansion=0;          /* 0 = window, 1 = full screen */
+var maskScale=0;          /* reveal scale of the window  */
+var layerOpacity=1;
+var transitionActive=false;
+var sceneStarted=false;
+var rotX=0,rotY=0,targetX=0,targetY=0;
+var FOCAL=850;
+var portalRect=null;      /* measured on resize / state change, never inside the loop */
+
+function measurePortal(){
+  var r=portal.getBoundingClientRect();
+  portalRect={left:r.left,top:r.top,width:r.width,height:r.height};
+  markDirty();
+}
+
+/* rounded-rect outline sampled as ~44 points, local coords around the origin */
+function maskPoints(w,h,r){
+  r=Math.min(r,w/2,h/2);
+  var corners=[
+    [w/2-r,-h/2+r,-Math.PI/2,0],
+    [w/2-r, h/2-r, 0,Math.PI/2],
+    [-w/2+r,h/2-r, Math.PI/2,Math.PI],
+    [-w/2+r,-h/2+r,Math.PI,Math.PI*1.5]
+  ];
+  var pts=[];
+  for(var i=0;i<corners.length;i++){
+    var c=corners[i];
+    for(var s=0;s<=10;s++){
+      var a=c[2]+(c[3]-c[2])*(s/10);
+      pts.push([c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r]);
+    }
+  }
+  return pts;
+}
+
+/* fake perspective, focal 850 */
+function project(x,y,rx,ry,cx,cy){
+  var ax=rx*Math.PI/180,ay=ry*Math.PI/180;
+  var xx=x*Math.cos(ay);
+  var yy=y*Math.cos(ax);
+  var z=x*Math.sin(ay)-y*Math.sin(ax);
+  var p=FOCAL/(FOCAL+z);
+  return [cx+xx*p,cy+yy*p];
+}
+
+var lastClip='';
+function setClip(value){
+  if(value===lastClip) return;
+  layer.style.clipPath=value;
+  layer.style.webkitClipPath=value;
+  lastClip=value;
+}
+
+/* The whole "canvas mask" is now a polygon string. The browser composites the
+   video itself; the only per-frame work is recomputing 44 points. */
+function updateMask(){
+  if(!sceneStarted||!portalRect){setClip('inset(50%)');return;}
+  var rect=portalRect;
+  var e=expansion;
+  var rcx=rect.left+rect.width/2;
+  var rcy=rect.top+rect.height/2;
+  var cx=rcx+(innerWidth/2-rcx)*e;
+  var cy=rcy+(innerHeight/2-rcy)*e;
+  var baseW=rect.width+(innerWidth-rect.width)*e;
+  var baseH=rect.height+(innerHeight-rect.height)*e;
+  var scale=e?1:maskScale;
+  var w=baseW*scale,h=baseH*scale;
+  var r=90*(1-e)*scale;
+  var rx=rotX*(1-e),ry=rotY*(1-e);
+
+  var op=String(layerOpacity);
+  if(layer.style.opacity!==op) layer.style.opacity=op;
+
+  if(!(w>1&&h>1)){setClip('inset(50%)');return;}
+  if(e>=1){setClip('none');return;}
+
+  var pts=maskPoints(w,h,r);
+  var out=new Array(pts.length);
+  for(var i=0;i<pts.length;i++){
+    var p=project(pts[i][0],pts[i][1],rx,ry,cx,cy);
+    out[i]=p[0].toFixed(1)+'px '+p[1].toFixed(1)+'px';
+  }
+  setClip('polygon('+out.join(',')+')');
+}
+
+function syncMedia(){
+  layer.dataset.media=transitionActive?'transition':(states[current].image?'image':'video');
+}
+
+/* ===================== one loop, and it sleeps when nothing moves ===================== */
+var dirty=true;
+var running=false;
+var lastTs=0;
+var tweens=[];
+var pointer={x:innerWidth/2,y:innerHeight/2};
+var orbit={x:innerWidth/2,y:innerHeight/2};
+var wroteDot={x:NaN,y:NaN};
+var wroteOrbit={x:NaN,y:NaN};
+var cursorLive=false;
+
+function wake(){
+  if(running) return;
+  running=true;
+  lastTs=0;
+  requestAnimationFrame(loop);
+}
+function markDirty(){dirty=true;wake();}
+
+function easeInOutCubic(t){
+  return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+}
+
+function loop(ts){
+  var dt=lastTs?Math.min(40,ts-lastTs):16;
+  lastTs=ts;
+  var keepGoing=false;
+
+  /* tweens (mask reveal, expansion) */
+  if(tweens.length){
+    var now=performance.now();
+    for(var i=tweens.length-1;i>=0;i--){
+      var tw=tweens[i];
+      var t=Math.max(0,Math.min(1,(now-tw.start)/tw.duration));
+      tw.setter(easeInOutCubic(t));
+      if(t>=1){tweens.splice(i,1);tw.resolve();}
+    }
+    dirty=true;
+    keepGoing=true;
+  }
+
+  /* tilt easing */
+  if(Math.abs(targetX-rotX)>0.01||Math.abs(targetY-rotY)>0.01){
+    var k=Math.min(1,dt*0.009);
+    rotX+=(targetX-rotX)*k;
+    rotY+=(targetY-rotY)*k;
+    dirty=true;
+    keepGoing=true;
+  }else if(rotX!==targetX||rotY!==targetY){
+    rotX=targetX;rotY=targetY;dirty=true;
+  }
+
+  /* cursor: transforms only; nothing is written when it is still */
+  if(cursorLive){
+    orbit.x+=(pointer.x-orbit.x)*0.2;
+    orbit.y+=(pointer.y-orbit.y)*0.2;
+    if(pointer.x!==wroteDot.x||pointer.y!==wroteDot.y){
+      cursorDot.style.transform='translate3d('+pointer.x+'px,'+pointer.y+'px,0)';
+      wroteDot.x=pointer.x;wroteDot.y=pointer.y;
+    }
+    if(Math.abs(orbit.x-wroteOrbit.x)>0.05||Math.abs(orbit.y-wroteOrbit.y)>0.05||wroteOrbit.x!==wroteOrbit.x){
+      var ot='translate3d('+orbit.x.toFixed(2)+'px,'+orbit.y.toFixed(2)+'px,0)';
+      cursorOrbit.style.transform=ot;
+      cursorLabel.style.transform=ot;
+      wroteOrbit.x=orbit.x;wroteOrbit.y=orbit.y;
+    }
+    if(Math.abs(pointer.x-orbit.x)>0.1||Math.abs(pointer.y-orbit.y)>0.1) keepGoing=true;
+  }
+
+  if(dirty){dirty=false;updateMask();}
+
+  if(keepGoing||dirty) requestAnimationFrame(loop);
+  else running=false;
+}
+
+function animateValue(setter,duration){
+  return new Promise(function(resolve){
+    tweens.push({start:performance.now(),duration:duration,setter:setter,resolve:resolve});
+    wake();
+  });
+}
+
+/* ===================== helpers ===================== */
+function retrigger(el,cls){
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+function waitFor(media,events,timeout){
+  return new Promise(function(resolve){
+    var done=false;
+    function finish(){
+      if(done) return;
+      done=true;
+      events.forEach(function(name){media.removeEventListener(name,finish);});
+      clearTimeout(timer);
+      resolve();
+    }
+    if(media.tagName==='IMG'?(media.complete&&media.naturalWidth>0):media.readyState>=3) return resolve();
+    events.forEach(function(name){media.addEventListener(name,finish);});
+    var timer=setTimeout(finish,timeout);
+  });
+}
+function nextFrames(){
+  return new Promise(function(resolve){
+    requestAnimationFrame(function(){requestAnimationFrame(resolve);});
+  });
+}
+
+/* ===================== render ===================== */
+var rendered=false;
+function render(){
+  var s=states[current];
+  experience.dataset.planet=current;
+  titleEl.textContent=s.name.toUpperCase();
+  nextName.textContent=s.next;
+  nextNumber.textContent=s.number;
+  portal.setAttribute('aria-label','Travel to '+s.next);
+
+  var facts=document.createDocumentFragment();
+  s.facts.forEach(function(pair){
+    var row=document.createElement('div');
+    row.className='fact';
+    var dt=document.createElement('dt');
+    dt.textContent=pair[0];
+    var dd=document.createElement('dd');
+    dd.textContent=pair[1];
+    row.appendChild(dt);
+    row.appendChild(dd);
+    facts.appendChild(row);
+  });
+  factsEl.replaceChildren(facts);
+
+  var list=document.createDocumentFragment();
+  planets.forEach(function(name){
+    var item=document.createElement('span');
+    item.className='planet-item'+(name===s.name?' active':'');
+    item.textContent=name;
+    list.appendChild(item);
+  });
+  planetList.replaceChildren(list);
+  if(rendered){
+    planetList.classList.remove('is-switching');
+    void planetList.offsetWidth;
+    planetList.classList.add('is-switching');
+  }
+
+  var backgrounds=document.querySelectorAll('.background');
+  for(var i=0;i<backgrounds.length;i++){
+    backgrounds[i].classList.toggle('is-visible',backgrounds[i].id===s.background);
+  }
+
+  syncPortalSource();
+  syncMedia();
+  markDirty();
+  rendered=true;
+}
+
+function syncPortalSource(){
+  var s=states[current];
+  if(s.image){
+    if(!portalImage.getAttribute('src')) portalImage.src=s.image;
+    portalVideo.pause();            /* a still state keeps no decoder busy */
+  }else if(sceneStarted){           /* before the intro, stay off the network */
+    var want=playable(s.portal);
+    if(portalVideo.getAttribute('src')!==want){
+      portalVideo.preload='auto';
+      portalVideo.src=want;
+    }
+    portalVideo.loop=true;
+    if(!transitionActive) playPortal();
+  }
+}
+
+function playPortal(){
+  if(states[current].image) return;
+  var p=portalVideo.play();
+  if(p&&p.catch) p.catch(function(){});
+}
+
+/* ===================== reveals ===================== */
+function revealMask(){
+  retrigger(experience,'mask-revealing');
+  maskScale=0;
+  markDirty();
+  return animateValue(function(v){maskScale=v;},1050);
+}
+function revealPlanetContent(){
+  retrigger(experience,'content-revealing');
+}
+
+/* Copy the journey's final frame once. It stays as the new backdrop until the
+   next journey replaces it — the planet you arrived at stays on screen. */
+function freezeFrame(video){
+  var w=video.videoWidth,h=video.videoHeight;
+  if(!w||!h) return false;
+  sceneCanvas.width=w;
+  sceneCanvas.height=h;
+  try{sceneCtx.drawImage(video,0,0,w,h);}catch(e){return false;}
+  sceneCanvas.classList.add('is-frozen');
+  return true;
+}
+
+/* ===================== travel ===================== */
+function travel(){
+  if(busy||current==='venus') return;
+  busy=true;
+  targetX=0;targetY=0;
+  markDirty();
+
+  var next=current==='mars'?'earth':'venus';
+  var journey=states[current].portal;
+
+  experience.classList.add('is-loading');
+
+  /* The journey clip is the file already playing in the window, so it is
+     normally in memory already and this resolves at once. */
+  within(loadBlob(journey),4000).then(function(){
+    transitionVideo.src=playable(journey);
+    transitionVideo.load();
+    return waitFor(transitionVideo,['canplaythrough','error'],1600);
+  }).then(function(){
+    experience.classList.remove('is-loading','content-revealing','mask-revealing');
+    experience.classList.add('is-transitioning');
+    try{transitionVideo.currentTime=0;}catch(e){}
+    transitionVideo.playbackRate=1.3;
+    layerOpacity=1;
+    transitionActive=true;
+    portalVideo.pause();            /* one decoder at a time */
+    syncMedia();
+    markDirty();
+    var p=transitionVideo.play();
+    return (p&&p.then?p:Promise.resolve()).catch(function(){});
+  }).then(function(){
+    return animateValue(function(v){expansion=v;},1100);
+  }).then(function(){
+    return new Promise(function(resolve){
+      if(transitionVideo.ended) return resolve();
+      var done=false;
+      function fin(){
+        if(done) return;
+        done=true;
+        transitionVideo.removeEventListener('ended',fin);
+        clearTimeout(timer);
+        resolve();
+      }
+      transitionVideo.addEventListener('ended',fin);
+      var remaining=((transitionVideo.duration||6)-(transitionVideo.currentTime||0))/1.3;
+      var timer=setTimeout(fin,Math.max(800,remaining*1000+1500));
+    });
+  }).then(function(){
+    freezeFrame(transitionVideo);
+    current=next;
+    experience.classList.add('is-committing');
+    render();
+    return nextFrames();
+  }).then(function(){
+    transitionActive=false;
+    expansion=0;
+    maskScale=0;
+    layerOpacity=1;
+    syncMedia();
+    dirty=false;
+    updateMask();                   /* collapse the window in this very frame */
+    playPortal();
+    experience.classList.remove('is-transitioning','is-committing');
+    measurePortal();
+    var maskReveal=revealMask();
+    setTimeout(revealPlanetContent,100);
+    return maskReveal;
+  }).then(function(){
+    setTimeout(function(){
+      transitionVideo.removeAttribute('src');
+      transitionVideo.load();
+      busy=false;
+    },450);
+  }).catch(function(){
+    transitionActive=false;
+    expansion=0;
+    maskScale=1;
+    layerOpacity=1;
+    syncMedia();
+    experience.classList.remove('is-loading','is-transitioning','is-committing');
+    markDirty();
+    busy=false;
+  });
+}
+
+portal.addEventListener('click',travel);
+
+/* ===================== pointer ===================== */
+addEventListener('pointermove',function(e){
+  if(e.pointerType==='touch') return;       /* touch: no tilt, no custom cursor */
+  pointer.x=e.clientX;
+  pointer.y=e.clientY;
+  if(!cursorLive){
+    cursorLive=true;
+    orbit.x=e.clientX;orbit.y=e.clientY;
+  }
+  cursor.classList.add('is-visible');
+  if(!busy&&!reduceMotion.matches){
+    targetY=(e.clientX/innerWidth-0.5)*37.4;
+    targetX=(e.clientY/innerHeight-0.5)*-33;
+  }
+  wake();
+},{passive:true});
+
+function pointerGone(){
+  targetX=0;targetY=0;
+  cursor.classList.remove('is-visible');
+  wake();
+}
+/* browsers that refuse muted autoplay still allow playback after any gesture */
+function resumeOnGesture(){
+  if(sceneStarted&&!transitionActive&&!states[current].image&&portalVideo.paused) playPortal();
+}
+['pointerdown','keydown','touchstart'].forEach(function(type){
+  addEventListener(type,resumeOnGesture,{passive:true,capture:true});
+});
+
+document.addEventListener('mouseleave',pointerGone);
+addEventListener('blur',pointerGone);
+portal.addEventListener('pointerenter',function(){cursor.classList.add('is-enter');});
+portal.addEventListener('pointerleave',function(){cursor.classList.remove('is-enter');});
+
+/* ===================== preloader ===================== */
+function startExperience(){
+  sceneStarted=true;
+  measurePortal();
+  var s=states[current];
+  var media=s.image?portalImage:portalVideo;
+  /* the portal clip has been downloading since the preloader finished its own */
+  within(s.image?Promise.resolve():loadBlob(s.portal),5000).then(function(){
+    syncPortalSource();             /* assigns the (now in-memory) portal source */
+    return waitFor(media,['canplaythrough','loadeddata','load','error'],1600);
+  }).then(function(){
+    measurePortal();
+    return revealMask();
+  }).then(function(){
+    document.body.classList.add('intro-ready');
+    setTimeout(revealPlanetContent,850);
+  });
+}
+
+/* An ended <video> is not a reliable long-lived backdrop: browsers may suspend
+   an idle player and drop its frame, leaving the black .preloader behind it.
+   So the arrival frame is copied into the static backdrop canvas — the same
+   path every later journey uses — and the preloader's decoder is released. */
+function freezePreloaderFrame(){
+  var v=preloaderVideo;
+  var d=v.duration;
+  return new Promise(function(resolve){
+    if(!v.getAttribute('src')||!d||!isFinite(d)){resolve(false);return;}
+    function grab(){resolve(freezeFrame(v));}
+    if(v.ended||d-v.currentTime<0.15){
+      if(v.readyState>=2) grab(); else v.addEventListener('loadeddata',grab,{once:true});
+      return;
+    }
+    /* never reached the end (timeout / autoplay refused): show the arrival frame anyway */
+    v.pause();
+    v.addEventListener('seeked',grab,{once:true});
+    v.currentTime=Math.max(0,d-0.05);
+  });
+}
+function releasePreloaderVideo(){
+  preloaderVideo.pause();
+  preloaderVideo.removeAttribute('src');
+  preloaderVideo.load();
+}
+
+function runPreloader(){
+  var finished=false;
+  var downloaded=0;                 /* 0..1 of the approach clip in memory */
+  function finish(){
+    if(finished) return;
+    finished=true;
+    freezePreloaderFrame().then(function(ok){
+      if(ok) requestAnimationFrame(function(){requestAnimationFrame(releasePreloaderVideo);});
+    });
+    preloaderValue.textContent='100';
+    preloaderCount.classList.add('is-leaving');
+    logo.classList.add('is-docked');
+    preloader.classList.add('is-background');
+    document.body.classList.add('preload-complete');
+    startExperience();
+    setTimeout(function(){
+      if(preloaderCount.parentNode) preloaderCount.parentNode.removeChild(preloaderCount);
+    },750);
+    setTimeout(function(){
+      logo.classList.add('is-settled');
+      logo.classList.remove('is-flying');
+    },2000);
+  }
+
+  /* The counter is honest: the first half is the clip arriving, the second
+     half is the ~3 s flight playing from memory. */
+  var lastShown='';
+  function tick(){
+    if(finished) return;
+    var played=0;
+    var d=preloaderVideo.duration;
+    if(preloaderVideo.getAttribute('src')&&d&&isFinite(d)) played=Math.min(1,preloaderVideo.currentTime/d);
+    var v=String(Math.round((downloaded*0.5+played*0.5)*100));
+    if(v!==lastShown){preloaderValue.textContent=v;lastShown=v;}
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  function begin(){
+    var d=preloaderVideo.duration;
+    if(d&&isFinite(d)) preloaderVideo.playbackRate=Math.max(0.25,d/3);
+    var p=preloaderVideo.play();
+    if(p&&p.catch) p.catch(function(){finish();});
+  }
+
+  preloaderVideo.addEventListener('ended',finish);
+  loadBlob(TO_MARS,function(f){downloaded=f;}).then(function(src){
+    downloaded=1;
+    prefetchRest();                   /* the pipe is free: fetch the portal clip now */
+    preloaderVideo.addEventListener('loadedmetadata',begin,{once:true});
+    preloaderVideo.preload='auto';
+    preloaderVideo.src=src;
+  });
+  setTimeout(finish,30000);           /* never trap the visitor on the loader */
+}
+
+/* ===================== boot ===================== */
+var resizeTimer=0;
+addEventListener('resize',function(){
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(measurePortal,60);
+},{passive:true});
+
+/* backgrounds start paused at frame 0; not seeking them keeps them off the network */
+var bgVideos=document.querySelectorAll('.background');
+for(var b=0;b<bgVideos.length;b++) bgVideos[b].pause();
+render();
+measurePortal();
+runPreloader();
+
+})();
+</script>
+</body>
+</html>

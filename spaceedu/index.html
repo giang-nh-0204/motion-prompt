@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SpaceEdu &mdash; Planets</title>
+<link rel="icon" type="image/png" href="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202005_3346cc4d-ec3b-44ab-825c-b18e49f5021a.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Poppins:wght@500;600&family=Prata&display=swap">
+<script>
+(function(){try{
+  if(!window.matchMedia||!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.documentElement.classList.add('anim');
+  }
+}catch(e){}})();
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --dw:1353; --dh:1163; --gutter:25;
+  --u:max(min(.72px, calc(100vh / 700)), min(calc(100vw / 1353), calc(100vh / 1163)));
+  --dh-px:calc(1163 * var(--u));
+  --vshift:calc(max(0px, (100vh - var(--dh-px))) * .42);
+  --ink:#ffffff; --cyan:#79dce8; --cyan-logo:#5fd0e1;
+  --rule:rgba(255,255,255,.23); --btn-ink:#071227;
+  --font-serif:'Prata', Georgia, serif;
+  --font-body:'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-logo:'Poppins', sans-serif;
+}
+@supports (height:100dvh){
+  :root{
+    --u:max(min(.72px, calc(100dvh / 700)), min(calc(100vw / 1353), calc(100dvh / 1163)));
+    --vshift:calc(max(0px, (100dvh - var(--dh-px))) * .42);
+  }
+}
+html,body{height:100%}
+body{background:#04101f; color:var(--ink); font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  text-rendering:geometricPrecision; overflow:hidden}
+
+/* ---------- STAGE / BACKDROP ---------- */
+.stage{position:fixed; inset:0; overflow:hidden; isolation:isolate}
+.sky{position:absolute; inset:0; z-index:0;
+  background-image:url("https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_508c64b8-a31e-4290-bdfc-1187df70e0a6.png");
+  background-size:cover; background-position:center; background-repeat:no-repeat}
+.sky video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  display:block; opacity:0; transition:opacity .22s linear}
+.sky video.is-active{opacity:1}
+@media (prefers-reduced-motion:reduce){ .sky video{display:none} }
+
+.ui{position:absolute; inset:0; z-index:3}
+
+/* ---------- SIDE PLANET SLOTS ---------- */
+.planet{position:absolute; z-index:-1; padding:0; border:0; background:none;
+  -webkit-appearance:none; appearance:none; line-height:0; cursor:pointer;
+  pointer-events:auto;
+  transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.planet img{display:none; width:100%; height:auto}
+.planet img.is-shown{display:block}
+.planet:hover{transform:scale(1.045)}
+.planet:active{transform:scale(.99)}
+.planet-l{width:calc(143 * var(--u)); left:calc(-69.5 * var(--u)); top:calc(-38.3 * var(--u))}
+.planet-r{width:calc(143 * var(--u)); right:calc(-64.7 * var(--u)); top:calc(-40.6 * var(--u))}
+@media (prefers-reduced-motion:reduce){
+  .planet{transition:none} .planet:hover,.planet:active{transform:none} }
+
+/* ---------- LAYOUT ---------- */
+.copy{position:absolute; inset:0; transform:translateY(var(--vshift)); pointer-events:none}
+.copy a{pointer-events:auto}
+.col{position:absolute; left:0; right:calc(var(--gutter) * var(--u)); text-align:center}
+
+/* ---------- NAV ---------- */
+.navbar{position:absolute; top:0; left:0; right:0; z-index:6; height:calc(88 * var(--u))}
+.navbar::after{content:""; position:absolute; left:calc(25 * var(--u));
+  right:calc(49 * var(--u)); top:calc(86 * var(--u)); height:calc(2 * var(--u));
+  background:var(--rule)}
+.navrow{position:absolute; left:calc(25 * var(--u)); right:calc(49 * var(--u)); top:0;
+  height:calc(86 * var(--u)); display:flex; align-items:center; justify-content:space-between}
+.logo{font-family:var(--font-logo); font-weight:600; font-size:calc(18.4 * var(--u));
+  letter-spacing:calc(-0.15 * var(--u)); line-height:1; color:#fff; text-decoration:none;
+  white-space:nowrap; position:relative; top:calc(-1 * var(--u))}
+.logo i{font-style:normal; color:var(--cyan-logo)}
+.burger{display:none; position:relative; width:calc(46 * var(--u)); height:calc(46 * var(--u));
+  padding:0; border:0; background:none; cursor:pointer; flex-direction:column;
+  align-items:center; justify-content:center; gap:calc(6 * var(--u)); flex:none}
+.burger span{display:block; width:calc(24 * var(--u)); height:calc(2 * var(--u));
+  border-radius:calc(2 * var(--u)); background:#fff;
+  transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .18s linear}
+.navrow[data-open="true"] .burger span:nth-child(1){transform:translateY(calc(8 * var(--u))) rotate(45deg)}
+.navrow[data-open="true"] .burger span:nth-child(2){opacity:0}
+.navrow[data-open="true"] .burger span:nth-child(3){transform:translateY(calc(-8 * var(--u))) rotate(-45deg)}
+.links{display:flex; align-items:center}
+.links a{position:relative; display:flex; align-items:center; height:calc(86 * var(--u));
+  font-size:calc(18.4 * var(--u)); font-weight:400; line-height:1; color:#fff;
+  text-decoration:none; padding:0 calc(17.5 * var(--u));
+  letter-spacing:calc(-1 * var(--u)); white-space:nowrap}
+.links a[aria-current="page"]::after{content:""; position:absolute; left:0; right:0;
+  top:calc(83.5 * var(--u)); height:calc(4 * var(--u)); background:var(--cyan);
+  border-radius:calc(1 * var(--u))}
+.links a:nth-child(3){letter-spacing:calc(-1.75 * var(--u))}
+.links a:nth-child(2){margin-left:calc(24 * var(--u))}
+.links a:nth-child(3){margin-left:calc(26 * var(--u))}
+.links a:nth-child(4){margin-left:calc(27 * var(--u))}
+.links a.enroll{margin-left:calc(28.5 * var(--u)); width:calc(107 * var(--u));
+  height:calc(38 * var(--u)); border-radius:calc(19 * var(--u)); display:flex;
+  align-items:center; justify-content:center; font-size:calc(17 * var(--u));
+  font-weight:600; letter-spacing:calc(-0.75 * var(--u)); line-height:1;
+  color:var(--btn-ink); text-decoration:none; padding-top:calc(2 * var(--u));
+  background:linear-gradient(180deg,#ffffff 0%,#d8ecfe 9%,#dceefe 72%,#f4f9ff 100%);
+  box-shadow:0 calc(3 * var(--u)) calc(14 * var(--u)) rgba(255,255,255,.22),
+             inset 0 0 0 calc(1.5 * var(--u)) rgba(255,255,255,.92);
+  flex:none}
+
+/* ---------- HERO COPY ---------- */
+.eyebrow{top:calc(188.8 * var(--u)); font-size:calc(30.45 * var(--u)); font-weight:500;
+  line-height:1; letter-spacing:calc(4 * var(--u)); text-indent:calc(4 * var(--u)); color:#fff}
+h1.title{top:calc(268 * var(--u)); font-family:var(--font-serif); font-weight:400;
+  font-size:calc(112.4 * var(--u)); line-height:1; letter-spacing:calc(2 * var(--u));
+  text-indent:calc(2 * var(--u)); color:#fff}
+.rule{top:calc(405.5 * var(--u)); height:calc(5 * var(--u)); font-size:0; line-height:0;
+  padding-right:calc(2 * var(--u))}
+.rule span{display:inline-block; vertical-align:top; width:calc(100 * var(--u));
+  height:100%; border-radius:calc(2.5 * var(--u)); background:var(--cyan)}
+p.lede{top:calc(433.2 * var(--u)); font-size:calc(18.36 * var(--u)); font-weight:400;
+  line-height:calc(30 * var(--u)); color:rgba(255,255,255,.95)}
+
+/* ---------- CTA ROW ---------- */
+.cta{top:calc(597 * var(--u)); height:calc(66 * var(--u)); isolation:isolate}
+.cta a{display:inline-flex; align-items:center; justify-content:center;
+  width:calc(216 * var(--u)); height:calc(66 * var(--u)); border-radius:calc(33 * var(--u));
+  font-size:calc(17 * var(--u)); font-weight:700; letter-spacing:0; text-indent:0;
+  line-height:1; color:var(--btn-ink); text-decoration:none; padding-top:calc(2 * var(--u));
+  background:linear-gradient(180deg,#ffffff 0%,#d6e8f8 4%,#d9ecfe 72%,#ffffff 100%);
+  box-shadow:0 calc(10 * var(--u)) calc(18 * var(--u)) calc(-8 * var(--u)) rgba(255,255,255,.50),
+             0 0 calc(26 * var(--u)) rgba(255,255,255,.18),
+             inset 0 0 0 calc(2 * var(--u)) rgba(255,255,255,.9)}
+.label{position:absolute; top:calc(33 * var(--u)); font-family:var(--font-serif);
+  font-weight:400; font-size:calc(17.8 * var(--u)); letter-spacing:calc(4.6 * var(--u));
+  line-height:1; color:#fff; white-space:nowrap}
+.label.label-l{left:calc(111 * var(--u))}
+.label.label-r{right:calc(104 * var(--u))}
+
+/* ---------- SCROLL CONTROL ---------- */
+.scroll{position:absolute; z-index:4; left:50%;
+  margin-left:calc((-48 - (var(--gutter) / 2)) * var(--u)); bottom:calc(68 * var(--u));
+  width:calc(96 * var(--u)); height:calc(96 * var(--u)); border-radius:50%;
+  background:rgba(24,30,42,.70); -webkit-backdrop-filter:blur(calc(6 * var(--u)));
+  backdrop-filter:blur(calc(6 * var(--u))); border:0; display:flex; align-items:center;
+  justify-content:center; cursor:pointer}
+.scroll svg{width:calc(20 * var(--u)); height:calc(25 * var(--u)); display:block}
+
+/* ---------- FOCUS ---------- */
+.scroll:focus-visible,.links a:focus-visible,.enroll:focus-visible,
+.cta a:focus-visible,.logo:focus-visible{
+  outline:calc(2 * var(--u)) solid var(--cyan); outline-offset:calc(3 * var(--u))}
+.planet:focus-visible{outline:calc(2 * var(--u)) solid var(--cyan);
+  outline-offset:calc(6 * var(--u)); border-radius:50%}
+
+/* ============ A) NAV COLLAPSE ============ */
+@media (max-width:1030px), (max-height:620px){
+  .navrow{left:calc(25 * var(--u)); right:calc(25 * var(--u))}
+  .burger{display:flex}
+  .links{position:absolute; top:calc(96 * var(--u)); right:0; z-index:5;
+    width:min(calc(324 * var(--u)), calc(100vw - 50 * var(--u)));
+    flex-direction:column; align-items:stretch; padding:calc(12 * var(--u));
+    border-radius:calc(20 * var(--u)); background:rgba(9,21,42,.84);
+    -webkit-backdrop-filter:blur(calc(18 * var(--u)));
+    backdrop-filter:blur(calc(18 * var(--u)));
+    border:calc(1 * var(--u)) solid rgba(255,255,255,.14);
+    box-shadow:0 calc(18 * var(--u)) calc(44 * var(--u)) rgba(2,8,20,.55);
+    opacity:0; visibility:hidden; transform:translateY(calc(-10 * var(--u)));
+    transition:opacity .24s ease, transform .28s cubic-bezier(.4,0,.2,1), visibility .28s}
+  .navrow[data-open="true"] .links{opacity:1; visibility:visible; transform:none}
+  .links a:nth-child(n){margin-left:0; height:auto; justify-content:flex-start;
+    padding:calc(14 * var(--u)) calc(16 * var(--u)); font-size:calc(19 * var(--u));
+    letter-spacing:calc(-.6 * var(--u))}
+  .links a + a{border-top:calc(1 * var(--u)) solid rgba(255,255,255,.08)}
+  .links a[aria-current="page"]::after{top:auto; bottom:calc(9 * var(--u));
+    left:calc(16 * var(--u)); right:auto; width:calc(26 * var(--u)); height:calc(3 * var(--u))}
+  .links a.enroll{margin:calc(14 * var(--u)) 0 calc(2 * var(--u)); width:100%;
+    height:calc(46 * var(--u)); border-radius:calc(23 * var(--u)); justify-content:center;
+    padding-top:calc(2 * var(--u)); font-size:calc(18 * var(--u));
+    letter-spacing:calc(-.4 * var(--u)); border-top:0}
+  .links a.enroll::after{content:none}
+}
+
+/* ============ B) TABLET ============ */
+@media (min-width:580px) and (max-width:1030px) and (min-height:621px){
+  :root{--gutter:0;
+    --u:min(max(min(.85px, calc(100vh / 780)), min(calc(100vw / 900), calc(100vh / 1163))), 1.15px);
+    --dh-px:calc(1120 * var(--u));
+    --vshift:calc(max(0px, (100vh - var(--dh-px))) * .38)}
+  @supports (height:100dvh){
+    :root{--gutter:0;
+      --u:min(max(min(.85px, calc(100dvh / 780)), min(calc(100vw / 900), calc(100dvh / 1163))), 1.15px);
+      --dh-px:calc(1120 * var(--u));
+      --vshift:calc(max(0px, (100dvh - var(--dh-px))) * .38)}
+  }
+  .navbar::after{left:calc(25 * var(--u)); right:calc(25 * var(--u))}
+  p.lede br{display:none}
+  p.lede{max-width:calc(620 * var(--u)); margin-left:auto; margin-right:auto; text-wrap:pretty}
+  .label.label-r{right:calc(116 * var(--u))}
+}
+
+/* ============ C) PHONE ============ */
+@media (max-width:579px), (max-height:620px){
+  :root{--gutter:0;
+    --u:max(min(.92px, calc(100vh / 620)), min(calc(100vw / 430), calc(100vh / 880)));
+    --dh-px:calc(880 * var(--u));
+    --vshift:calc(max(0px, (100vh - var(--dh-px))) * .34)}
+  @supports (height:100dvh){
+    :root{--gutter:0;
+      --u:max(min(.92px, calc(100dvh / 620)), min(calc(100vw / 430), calc(100dvh / 880)));
+      --dh-px:calc(880 * var(--u));
+      --vshift:calc(max(0px, (100dvh - var(--dh-px))) * .34)}
+  }
+  .navbar{height:calc(76 * var(--u))}
+  .navbar::after{left:calc(24 * var(--u)); right:calc(24 * var(--u)); top:calc(74 * var(--u))}
+  .navrow{left:calc(24 * var(--u)); right:calc(24 * var(--u)); height:calc(74 * var(--u))}
+  .links{top:calc(84 * var(--u))}
+  .copy{top:calc(76 * var(--u)); display:flex; flex-direction:column; align-items:center;
+    padding:calc(56 * var(--u)) calc(26 * var(--u)) 0}
+  .col{position:static; width:100%; right:auto}
+  .eyebrow{font-size:calc(20 * var(--u)); letter-spacing:calc(5 * var(--u)); text-indent:calc(5 * var(--u))}
+  h1.title{font-size:calc(86 * var(--u)); margin-top:calc(15 * var(--u))}
+  .rule{margin-top:calc(20 * var(--u)); height:calc(5 * var(--u)); padding-right:0}
+  .rule span{width:calc(84 * var(--u))}
+  p.lede{margin-top:calc(19 * var(--u)); font-size:calc(15.5 * var(--u));
+    line-height:calc(26 * var(--u)); max-width:calc(400 * var(--u)); text-wrap:balance}
+  p.lede br{display:none}
+  .cta{top:auto; margin-top:calc(32 * var(--u)); height:calc(60 * var(--u)); position:relative}
+  .cta a{width:calc(190 * var(--u)); height:calc(60 * var(--u)); border-radius:calc(30 * var(--u))}
+  .label{top:50%; transform:translateY(-50%); font-size:calc(16 * var(--u));
+    letter-spacing:calc(4 * var(--u))}
+  .label.label-l{left:calc(56 * var(--u))}
+  .label.label-r{right:calc(60 * var(--u))}
+  .planet-l{width:calc(89 * var(--u)); left:calc(-44.5 * var(--u)); top:calc(-17 * var(--u))}
+  .planet-r{width:calc(89 * var(--u)); right:calc(-44.5 * var(--u)); top:calc(-18.3 * var(--u))}
+  .scroll{width:calc(74 * var(--u)); height:calc(74 * var(--u));
+    margin-left:calc(-37 * var(--u)); bottom:calc(49 * var(--u))}
+  .scroll svg{width:calc(15.5 * var(--u)); height:calc(19.5 * var(--u))}
+}
+
+/* ============ D) NO ROOM FOR THE SCROLL CONTROL ============ */
+@media (max-height:660px){ .scroll{display:none} }
+
+/* ============ E) SHORT ============ */
+@media (max-height:620px){
+  :root{--u:max(min(.85px, calc(100vh / 470)), min(calc(100vw / 640), calc(100vh / 560)));
+    --dh-px:calc(560 * var(--u)); --vshift:0px}
+  @supports (height:100dvh){
+    :root{--u:max(min(.85px, calc(100dvh / 470)), min(calc(100vw / 640), calc(100dvh / 560)));
+      --dh-px:calc(560 * var(--u)); --vshift:0px}
+  }
+  .copy{padding-top:calc(26 * var(--u))}
+  h1.title{font-size:calc(64 * var(--u)); margin-top:calc(8 * var(--u))}
+  .rule{margin-top:calc(12 * var(--u))}
+  p.lede{margin-top:calc(12 * var(--u))}
+  .cta{margin-top:calc(20 * var(--u))}
+  .label{top:50%; transform:translateY(-50%); font-size:calc(15 * var(--u))}
+  .label.label-l{left:calc(58 * var(--u))}
+  .label.label-r{right:calc(58 * var(--u))}
+}
+@media (min-width:821px) and (max-height:660px){ .copy{transform:none} }
+
+/* ============ F) NARROW PHONE (declared last so it wins inside tier E) ============ */
+@media (max-width:500px){
+  .label{top:calc(100% + 34 * var(--u)); transform:none; font-size:calc(15 * var(--u))}
+  .label.label-l{left:calc(6 * var(--u))}
+  .label.label-r{right:calc(6 * var(--u))}
+}
+
+@media (prefers-reduced-motion:reduce){ .links,.burger span{transition:none} }
+
+/* ============ ENTRANCE ANIMATION ============ */
+@keyframes ent-reveal{from{transform:translateY(115%)}to{transform:translateY(0)}}
+@keyframes ent-rise{from{opacity:0;transform:translateY(var(--rise,10px))}to{opacity:1;transform:none}}
+@keyframes ent-settle{from{opacity:0;transform:translateY(var(--rise,8px)) scale(.965)}to{opacity:1;transform:none}}
+@keyframes ent-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ent-fade{from{opacity:0}to{opacity:1}}
+
+.anim{--e-expo:cubic-bezier(.16,1,.3,1); --e-quint:cubic-bezier(.22,1,.36,1);
+      --e-slow:cubic-bezier(.4,0,.2,1)}
+.ent-mask,.ent-line{display:block}
+.anim .ent-mask{overflow:hidden; padding-top:.18em; margin-top:-.18em}
+.anim .ent-line{transform:translateY(115%); will-change:transform}
+.anim .navbar::after,.anim .links a[aria-current="page"]::after,.anim .rule span{transform:scaleX(0)}
+.anim .logo,.anim .links a,.anim .burger,.anim p.lede,.anim .label,.anim .cta a,
+.anim .scroll,.anim .sky{opacity:0}
+.anim .sky{will-change:opacity}
+
+.anim.play .sky{animation:ent-fade 1.6s var(--e-slow) .25s both}
+.anim.play .navbar::after{animation:ent-draw .9s var(--e-expo) .12s both}
+.anim.play .logo{--rise:calc(8 * var(--u)); animation:ent-rise .6s var(--e-quint) .20s both}
+.anim.play .links a{--rise:calc(8 * var(--u)); animation:ent-rise .55s var(--e-quint) both}
+.anim.play .links a:nth-child(1){animation-delay:.26s}
+.anim.play .links a:nth-child(2){animation-delay:.31s}
+.anim.play .links a:nth-child(3){animation-delay:.36s}
+.anim.play .links a:nth-child(4){animation-delay:.41s}
+.anim.play .links a.enroll,
+.anim.play .burger{--rise:calc(8 * var(--u)); animation:ent-settle .6s var(--e-quint) .46s both}
+.anim.play .links a[aria-current="page"]::after{animation:ent-draw .55s var(--e-expo) .60s both}
+.anim.play .eyebrow .ent-line{animation:ent-reveal .75s var(--e-expo) .30s both}
+.anim.play h1.title .ent-line{animation:ent-reveal .95s var(--e-expo) .44s both}
+.anim.play .rule span{animation:ent-draw .65s var(--e-expo) .78s both}
+.anim.play p.lede{--rise:calc(12 * var(--u)); animation:ent-rise .7s var(--e-quint) .86s both}
+.anim.play .label.label-l{--rise:calc(8 * var(--u)); animation:ent-rise .6s var(--e-quint) 1.04s both}
+.anim.play .label.label-r{--rise:calc(8 * var(--u)); animation:ent-rise .6s var(--e-quint) 1.10s both}
+.anim.play .cta a{--rise:calc(8 * var(--u)); animation:ent-settle .7s var(--e-quint) 1.14s both}
+.anim.play .scroll{animation:ent-settle .6s var(--e-quint) 1.42s both}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="sky">
+    <video data-planet="earth" class="is-active" autoplay muted loop playsinline preload="auto"
+      src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202422_3ffb4889-c520-432d-8458-038009eb40df.mp4"
+      poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_508c64b8-a31e-4290-bdfc-1187df70e0a6.png"
+      aria-hidden="true"></video>
+    <video data-planet="venus" muted loop playsinline preload="none"
+      data-src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202422_b211cd74-013b-4dd3-bfd0-64491d8696fa.mp4"
+      poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_cf55d1d8-7b59-4a64-80da-d72052ae974e.png"
+      aria-hidden="true"></video>
+    <video data-planet="mars" muted loop playsinline preload="none"
+      data-src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202422_51eae59a-2459-4c84-907c-cc5edfe5fea7.mp4"
+      poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_0ba6de7c-285d-43dc-b7ab-8c54c73707cb.png"
+      aria-hidden="true"></video>
+  </div>
+
+  <div class="ui">
+    <header class="navbar">
+      <div class="navrow">
+        <a class="logo" href="#">space<i>edu</i></a>
+        <nav class="links" id="site-nav">
+          <a href="#" aria-current="page">Planets</a>
+          <a href="#">Tution</a>
+          <a href="#">Tutorials</a>
+          <a href="#">Blog</a>
+          <a class="enroll" href="#">Enroll</a>
+        </nav>
+        <button class="burger" type="button" aria-label="Open navigation"
+                aria-expanded="false" aria-controls="site-nav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="copy">
+      <div class="col eyebrow"><span class="ent-mask"><span class="ent-line">PLANET</span></span></div>
+      <h1 class="col title"><span class="ent-mask"><span class="ent-line">EARTH</span></span></h1>
+      <div class="col rule"><span></span></div>
+      <p class="col lede">Learn more about the fascinating details that we call our home, Planet Earth. Course enrollment <br>starts today. Early Bird tickets typically last a week, don&rsquo;t miss out!</p>
+      <div class="col cta">
+        <button class="planet planet-l" type="button" data-slot="l">
+          <img data-planet="earth" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202005_3346cc4d-ec3b-44ab-825c-b18e49f5021a.png">
+          <img data-planet="venus" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202012_640b239a-d08a-4200-adb2-741bbe129ac8.png">
+          <img data-planet="mars" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202018_3d559490-f613-4ed7-a3bb-3b7e9fc90fb8.png">
+        </button>
+        <button class="planet planet-r" type="button" data-slot="r">
+          <img data-planet="earth" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202005_3346cc4d-ec3b-44ab-825c-b18e49f5021a.png">
+          <img data-planet="venus" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202012_640b239a-d08a-4200-adb2-741bbe129ac8.png">
+          <img data-planet="mars" alt="" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202018_3d559490-f613-4ed7-a3bb-3b7e9fc90fb8.png">
+        </button>
+        <a href="#">GET STARTED</a>
+        <span class="label label-l"></span>
+        <span class="label label-r"></span>
+      </div>
+    </div>
+  </div>
+
+  <button class="scroll" type="button" aria-label="Scroll to next section">
+    <svg viewBox="0 0 26 33" fill="none" aria-hidden="true">
+      <path d="M13 1.5 V31.5 M1.9 20.4 L13 31.5 L24.1 20.4" stroke="#ffffff"
+            stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------------- ENTRANCE DRIVER ---------------- */
+  (function(){
+    var root = document.documentElement;
+    if(!root.classList.contains('anim')) return;
+    var started = false;
+    function start(){
+      if(started) return;
+      started = true;
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          root.classList.add('play');
+          /* Once the sequence has played, drop both classes so the page is left
+             in its authored static state — no timers, no residual transforms. */
+          setTimeout(function(){
+            root.classList.remove('anim');
+            root.classList.remove('play');
+          }, 2150);
+        });
+      });
+    }
+    var guard = setTimeout(start, 500);   /* a font stall must not block the page */
+    if(document.fonts && document.fonts.ready && document.fonts.ready.then){
+      document.fonts.ready.then(function(){ clearTimeout(guard); start(); },
+                               function(){ clearTimeout(guard); start(); });
+    } else {
+      clearTimeout(guard);
+      start();
+    }
+  })();
+
+  /* ---------------- PLANET SWITCHER ---------------- */
+  var ORDER = ['earth','venus','mars'];
+  var TAIL = 'Course enrollment <br>starts today. Early Bird tickets typically last a week, don&rsquo;t miss out!';
+  var DATA = {
+    earth:{
+      name:'EARTH',
+      cutout:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202005_3346cc4d-ec3b-44ab-825c-b18e49f5021a.png',
+      still:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_508c64b8-a31e-4290-bdfc-1187df70e0a6.png',
+      lede:'Learn more about the fascinating details that we call our home, Planet Earth. ' + TAIL
+    },
+    venus:{
+      name:'VENUS',
+      cutout:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202012_640b239a-d08a-4200-adb2-741bbe129ac8.png',
+      still:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_cf55d1d8-7b59-4a64-80da-d72052ae974e.png',
+      lede:'The hottest world in our solar system, wrapped in clouds of sulfuric acid. ' + TAIL
+    },
+    mars:{
+      name:'MARS',
+      cutout:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202018_3d559490-f613-4ed7-a3bb-3b7e9fc90fb8.png',
+      still:'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260827_202133_0ba6de7c-285d-43dc-b7ab-8c54c73707cb.png',
+      lede:'The rust-red desert world, home to the tallest volcano we know of. ' + TAIL
+    }
+  };
+
+  var sky     = document.querySelector('.sky');
+  var clips   = [].slice.call(document.querySelectorAll('.sky video'));
+  var titleLn = document.querySelector('h1.title .ent-line');
+  var lede    = document.querySelector('p.lede');
+  var slots   = { l:document.querySelector('.planet-l'), r:document.querySelector('.planet-r') };
+  var labels  = { l:document.querySelector('.label-l'),  r:document.querySelector('.label-r') };
+  var current = null;
+
+  function clipOf(planet){
+    for(var i = 0; i < clips.length; i++){
+      if(clips[i].dataset.planet === planet) return clips[i];
+    }
+    return null;
+  }
+
+  /* Start the fetch on intent rather than on click. */
+  function warm(planet){
+    var v = clipOf(planet);
+    if(!v || v.getAttribute('src') || !v.dataset.src) return;
+    v.preload = 'auto';
+    v.src = v.dataset.src;
+    v.load();
+  }
+
+  function show(next){
+    if(!DATA[next] || next === current) return;
+    current = next;
+
+    clips.forEach(function(v){
+      if(v.dataset.planet === next){
+        if(!v.getAttribute('src') && v.dataset.src){ v.src = v.dataset.src; }
+        v.classList.add('is-active');
+        var p = v.play();
+        if(p && p.catch) p.catch(function(){});
+      } else {
+        v.classList.remove('is-active');
+        v.pause();
+      }
+    });
+
+    /* Keeps reduced-motion visitors, who never see a clip, on the right planet. */
+    sky.style.backgroundImage = 'url("' + DATA[next].still + '")';
+    titleLn.textContent = DATA[next].name;
+    lede.innerHTML = DATA[next].lede;
+
+    var rest = ORDER.filter(function(p){ return p !== next; });
+    [['l', rest[0]], ['r', rest[1]]].forEach(function(pair){
+      var key = pair[0], planet = pair[1], btn = slots[key];
+      /* Reveal by class only. Reassigning img.src would keep the previous planet
+         painted until the new 2048px file finished downloading. */
+      [].forEach.call(btn.querySelectorAll('img'), function(img){
+        img.classList.toggle('is-shown', img.dataset.planet === planet);
+      });
+      btn.dataset.planet = planet;
+      btn.setAttribute('aria-label', 'Show ' + DATA[planet].name);
+      labels[key].textContent = DATA[planet].name;
+    });
+  }
+
+  ['l','r'].forEach(function(key){
+    var btn = slots[key];
+    btn.addEventListener('click', function(){ show(this.dataset.planet); });
+    btn.addEventListener('pointerenter', function(){ warm(this.dataset.planet); });
+    btn.addEventListener('focus', function(){ warm(this.dataset.planet); });
+  });
+
+  show('earth');
+
+  function warmAll(){ ORDER.forEach(warm); }
+  requestAnimationFrame(function(){
+    if(window.requestIdleCallback) requestIdleCallback(warmAll, { timeout:4000 });
+    else setTimeout(warmAll, 2500);
+  });
+
+  /* ---------------- BURGER MENU ---------------- */
+  var navrow  = document.querySelector('.navrow');
+  var burger  = document.querySelector('.burger');
+  var navmenu = document.getElementById('site-nav');
+
+  function set(open){
+    navrow.dataset.open = open ? 'true' : 'false';
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  }
+  set(false);
+
+  burger.addEventListener('click', function(e){
+    e.stopPropagation();
+    set(navrow.dataset.open !== 'true');
+  });
+  document.addEventListener('click', function(e){
+    if(navrow.dataset.open !== 'true') return;
+    if(navmenu.contains(e.target) || burger.contains(e.target)) return;
+    set(false);
+  });
+  document.addEventListener('keydown', function(e){
+    if((e.key === 'Escape' || e.key === 'Esc') && navrow.dataset.open === 'true'){
+      set(false);
+      burger.focus();
+    }
+  });
+  navmenu.addEventListener('click', function(e){
+    if(e.target && e.target.closest && e.target.closest('a')) set(false);
+  });
+})();
+</script>
+</body>
+</html>
