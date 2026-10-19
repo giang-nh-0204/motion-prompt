@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1a2b">
+<title>Camper — Overnight Camp</title>
+<meta name="description" content="Campers enjoy fun evening programs and sleep in our cabins. All cabins are separated by both age and gender ensuring a fun atmosphere.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@700&family=Outfit:wght@400;500;600;700&display=block" rel="stylesheet">
+<script>
+/* Pre-paint entrance state. The class is removed by the main script when the animation starts,
+   or by this timer if that script never runs, so the page always ends up looking finished. */
+(function () {
+  try {
+    var h = document.documentElement;
+    h.classList.add(matchMedia('(prefers-reduced-motion: reduce)').matches ? 'pre-rm' : 'pre');
+    setTimeout(function () { h.classList.remove('pre', 'pre-rm'); }, 3500);
+  } catch (e) {}
+})();
+</script>
+<style>
+:root {
+  --orange: #ec4f30; --orange-hi: #f15a3c; --underline: #7e80d7;
+  --ink: #ffffff; --ink-soft: rgba(255,255,255,.92); --rule: rgba(255,255,255,.92); --night: #0b1a2b;
+  --h1-size: 104.64; --h1-ls: 1.72; --h1-lh: 101; --h1-off: 2.1;
+  --p-size: 16.6; --p-lh: 24.7; --p-w: 322; --p-gap: 32;
+  --btn-gap: 30; --btn-w: 178; --btn-h: 51; --btn-size: 17.48;
+  --nav-size: 13.79; --nav-gap: 93.9; --nav-shift: 3;
+  --logo-size: 23.34; --logo-shift: 1;
+  --su-size: 14.34; --su-w: 122; --su-h: 41; --su-bw: 1.5;
+  --head-top: 25; --head-left: 65.6; --head-right: 69;
+  --ul-w: 37; --ul-h: 2; --ul-top: 31.5;
+  --u: 1; --hero-top: 272px;
+  --s: 1; --tx: 0px; --ty: 0px; --scrim: 0;
+  --px: calc(1px * var(--u));
+  --serif: 'Gelasio', Georgia, 'Times New Roman', serif;
+  --sans: 'Outfit', 'Century Gothic', 'Poppins', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: #0b1a2b; }
+body {
+  font-family: var(--sans); color: var(--ink);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a:focus-visible, button:focus-visible { outline: calc(2 * var(--px)) solid #fff; outline-offset: calc(3 * var(--px)); }
+
+#app { position: fixed; inset: 0; overflow: hidden; background: var(--night); }
+
+/* ---------- artwork ---------- */
+#stage {
+  position: absolute; left: 0; top: 0; width: 1280px; height: 960px; z-index: 0;
+  transform-origin: 0 0; transform: translate(var(--tx), var(--ty)) scale(var(--s));
+  background: var(--night);
+}
+#bg {
+  width: 1280px; height: 960px; display: block;
+  object-fit: cover; object-position: 50% 58%; pointer-events: none;
+}
+#topscrim {
+  position: absolute; left: 0; top: 0; right: 0; z-index: 1; pointer-events: none;
+  height: calc(178 * var(--px)); opacity: var(--scrim, 0);
+  background: linear-gradient(180deg, rgba(8,17,29,.88) 0%, rgba(8,17,29,.52) 42%, rgba(8,17,29,.18) 74%, rgba(8,17,29,0) 100%);
+}
+#scrim {
+  position: fixed; inset: 0; z-index: 3; background: rgba(5,12,22,.5);
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+#app[data-menu="open"] #scrim { opacity: 1; pointer-events: auto; }
+
+/* ---------- header (exact) ---------- */
+#masthead {
+  position: absolute; z-index: 4;
+  top: calc(var(--head-top) * var(--px)); left: calc(var(--head-left) * var(--px)); right: calc(var(--head-right) * var(--px));
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+  font-weight: 700; font-size: calc(var(--logo-size) * var(--px)); line-height: 1; color: var(--ink);
+  translate: 0 calc(var(--logo-shift) * var(--px));
+}
+.cluster { display: flex; align-items: center; gap: calc(var(--nav-gap) * var(--px)); }
+.links { display: flex; align-items: center; gap: calc(var(--nav-gap) * var(--px)); }
+.links a {
+  position: relative; font-weight: 600; font-size: calc(var(--nav-size) * var(--px)); line-height: 1; color: var(--ink-soft);
+  translate: 0 calc(var(--nav-shift) * var(--px)); white-space: nowrap;
+}
+.links a.is-active { color: var(--ink); }
+.links a.is-active::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+  top: calc(var(--ul-top) * var(--px)); width: calc(var(--ul-w) * var(--px)); height: calc(var(--ul-h) * var(--px));
+  background: var(--underline);
+}
+.signup {
+  display: flex; align-items: center; justify-content: center;
+  width: calc(var(--su-w) * var(--px)); height: calc(var(--su-h) * var(--px));
+  font-weight: 500; font-size: calc(var(--su-size) * var(--px)); line-height: 1; color: var(--ink);
+  border: calc(var(--su-bw) * var(--px)) solid #fff; border-radius: 0;
+  transition: background .2s ease, color .2s ease;
+}
+@media (hover: hover) { .signup:hover { background: #fff; color: var(--night); } }
+
+#menu-btn {
+  display: none; position: relative; width: calc(34 * var(--px)); height: calc(34 * var(--px));
+  flex-direction: column; justify-content: center; align-items: flex-end; gap: calc(5 * var(--px));
+}
+#menu-btn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(44px, 100%); height: max(44px, 100%); transform: translate(-50%, -50%); }
+#menu-btn span {
+  display: block; height: calc(1.6 * var(--px)); background: #fff; border-radius: 2px;
+  transition: transform .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
+  transform-origin: 50% 50%;
+}
+#menu-btn span:nth-child(1) { width: calc(28 * var(--px)); }
+#menu-btn span:nth-child(2) { width: calc(20 * var(--px)); }
+#app[data-menu="open"] #menu-btn span { width: calc(24 * var(--px)); }
+#app[data-menu="open"] #menu-btn span:nth-child(1) { transform: translateY(calc(3.3 * var(--px))) rotate(45deg); }
+#app[data-menu="open"] #menu-btn span:nth-child(2) { transform: translateY(calc(-3.3 * var(--px))) rotate(-45deg); }
+
+/* ---------- hero (exact) ---------- */
+#hero {
+  position: absolute; z-index: 2; left: calc(72 * var(--px)); top: var(--hero-top); width: calc(620 * var(--px));
+  transform-origin: 0 0;
+}
+h1 {
+  font-family: var(--serif); font-weight: 700; color: var(--ink);
+  font-size: calc(var(--h1-size) * var(--px)); line-height: calc(var(--h1-lh) * var(--px)); letter-spacing: calc(var(--h1-ls) * var(--px));
+  margin-top: calc(var(--h1-off) * -1 * var(--px));
+}
+h1 .ln { display: block; clip-path: inset(-40% -8% -8% -8%); }
+h1 .ln > span { display: block; }
+#hero p {
+  font-weight: 400; color: var(--ink-soft);
+  font-size: calc(var(--p-size) * var(--px)); line-height: calc(var(--p-lh) * var(--px));
+  width: calc(var(--p-w) * var(--px)); margin-top: calc(var(--p-gap) * var(--px));
+}
+.explore {
+  display: flex; align-items: center; justify-content: center;
+  width: calc(var(--btn-w) * var(--px)); height: calc(var(--btn-h) * var(--px)); margin-top: calc(var(--btn-gap) * var(--px));
+  background: var(--orange); color: #fff; font-weight: 400; font-size: calc(var(--btn-size) * var(--px)); line-height: 1;
+  border-radius: 0; transition: background .2s ease;
+}
+.explore:hover { background: var(--orange-hi); }
+.explore:active { transform: translateY(1px); }
+
+/* ---------- collapsed nav (tablet + compact) ---------- */
+#app:not([data-mode="exact"]) #menu-btn { display: flex; }
+#app:not([data-mode="exact"]) .cluster {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 5;
+  width: min(64vw, 360px); flex-direction: column; align-items: flex-start; justify-content: center; gap: clamp(28px, 4vh, 44px);
+  padding: calc(24px + env(safe-area-inset-top)) clamp(28px, 4vw, 44px) calc(24px + env(safe-area-inset-bottom));
+  background: rgba(9,20,34,.93); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
+  border-left: 1px solid rgba(255,255,255,.14);
+  transform: translateX(102%); transition: transform .34s cubic-bezier(.4,0,.2,1);
+  visibility: hidden;
+}
+#app:not([data-mode="exact"])[data-menu="open"] .cluster { transform: translateX(0); visibility: visible; }
+#app:not([data-mode="exact"]) .links { flex-direction: column; align-items: flex-start; gap: clamp(18px, 2.6vh, 26px); }
+#app:not([data-mode="exact"]) .links a { font-size: clamp(19px, 2.3vw, 23px); translate: none; }
+#app:not([data-mode="exact"]) .links a.is-active::after { left: 0; transform: none; top: calc(100% + 7px); width: 36px; height: 2px; }
+#app:not([data-mode="exact"]) .signup { width: clamp(126px, 17vw, 158px); height: clamp(44px, 5.2vh, 52px); font-size: clamp(14px, 1.6vw, 16px); border-width: 1.5px; }
+#app:not([data-mode="exact"]) #menu-btn { position: relative; z-index: 6; }
+
+/* ---------- compact / mobile ---------- */
+#app[data-mode="compact"] {
+  display: grid; grid-template-rows: auto 1fr; --u: 1;
+  --mpad: clamp(22px, 5.6vw, 34px);
+  --mgap: clamp(18px, min(6vw, 3.2vh), 34px);
+}
+#app[data-mode="compact"] #stage { position: absolute; inset: 0; width: 100%; height: 100%; transform: none; }
+#app[data-mode="compact"] #bg { width: 100%; height: 100%; object-position: 72% 50%; }
+#app[data-mode="compact"] #topscrim { height: clamp(240px, 52vh, 520px); opacity: .55; }
+#app[data-mode="compact"] #masthead {
+  position: relative; top: auto; left: auto; right: auto;
+  margin: calc(clamp(14px, min(4.4vw, 2.6vh), 28px) + env(safe-area-inset-top)) var(--mpad) 0;
+}
+#app[data-mode="compact"] .logo { font-size: clamp(23px, min(4.4vw, 5.4vh), 34px); }
+#app[data-mode="compact"] #hero {
+  position: relative; left: auto; top: auto; width: auto; align-self: start; transform: none;
+  margin: clamp(20px, min(7.4vh, 8vw), 72px) var(--mpad) calc(clamp(18px, 3vh, 30px) + env(safe-area-inset-bottom));
+}
+#app[data-mode="compact"] h1 { font-size: clamp(40px, min(14.2vw, 15vh), 112px); line-height: .96; letter-spacing: 0; margin: 0 0 0 -.02em; }
+#app[data-mode="compact"] #hero p { font-size: clamp(14px, min(3.9vw, 2.3vh), 19px); line-height: 1.47; width: min(100%, 38ch); margin-top: var(--mgap); }
+#app[data-mode="compact"] .explore {
+  width: clamp(150px, 44vw, 196px); height: clamp(46px, min(12vw, 11vh), 58px);
+  font-size: clamp(15px, min(4vw, 3.4vh), 18px); margin-top: var(--mgap);
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  #app[data-mode="compact"] { --mgap: clamp(14px, 2.6vh, 24px); }
+  #app[data-mode="compact"] #hero { max-width: min(60vw, 460px); }
+  #app[data-mode="compact"] h1 { font-size: clamp(38px, min(11vw, 13.5vh), 72px); }
+  #app[data-mode="compact"] #hero p { width: min(100%, 36ch); }
+}
+
+/* ---------- pre-paint entrance states ---------- */
+html.pre h1 .ln > span { transform: translateY(112%); }
+html.pre .logo, html.pre #links a, html.pre .signup, html.pre #menu-btn { opacity: 0; transform: translateY(9px); }
+html.pre #hero p { opacity: 0; transform: translateY(12px); }
+html.pre .explore { clip-path: inset(0 100% 0 0); }
+html.pre-rm #masthead, html.pre-rm #hero { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div id="app" data-mode="exact" data-menu="closed">
+  <div id="stage">
+    <video id="bg" autoplay muted loop playsinline disablepictureinpicture preload="auto" width="1280" height="960"
+           aria-label="Moonlit winter camp: a dog watching a campfire beside cabins below snowy peaks">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261005_115704_e1b28e05-aef1-477c-924b-0c1d4612f86f.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div id="topscrim"></div>
+  <div id="scrim"></div>
+
+  <header id="masthead">
+    <a class="logo" href="#">Camper</a>
+    <div class="cluster" id="nav-panel">
+      <nav class="links" id="links" aria-label="Main">
+        <a class="is-active" href="#" aria-current="page">Home</a>
+        <a href="#">Travel</a>
+        <a href="#">Location</a>
+        <a href="#">Companions</a>
+      </nav>
+      <a class="signup" href="#">Sign up</a>
+    </div>
+    <button id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span></button>
+  </header>
+
+  <section id="hero">
+    <h1><span class="ln"><span>Overnight</span></span><span class="ln"><span>Camp</span></span></h1>
+    <p>Campers enjoy fun evening programs and sleep in our cabins. All cabins are separated by both age and gender ensuring a fun atmosphere.</p>
+    <a class="explore" href="#">Explore</a>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var DW = 1280, DH = 960, HERO_H = 411, HEAD_H = 66, UI_MIN_H = 560;
+  var U_DESK = 0.874, PHONE_W = 600, TAB_REF = 840, T_MIN = 0.873, T_MAX = 1.08;
+  var EXPO = 'cubic-bezier(.16,1,.3,1)', SOFT = 'cubic-bezier(.22,.75,.2,1)';
+
+  var app = document.getElementById('app');
+  var root = document.documentElement;
+  var hero = document.getElementById('hero');
+  var head = document.getElementById('masthead');
+  var btn = document.getElementById('menu-btn');
+  var vid = document.getElementById('bg');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function vp() {
+    var v = window.visualViewport;
+    return { w: (v && v.width) || window.innerWidth, h: (v && v.height) || window.innerHeight };
+  }
+  function clamp(x, a, b) { return Math.min(b, Math.max(a, x)); }
+  function setVar(n, v) { root.style.setProperty(n, v); }
+
+  function layout() {
+    var s = vp(), vw = s.w, vh = s.h;
+    var uw = vw / DW;
+    var ut = Math.min(Math.min(Math.max(vw / TAB_REF, T_MIN), T_MAX), vh / UI_MIN_H);
+    var mode = uw >= U_DESK ? 'exact' : (vw >= PHONE_W && ut >= T_MIN) ? 'tablet' : 'compact';
+    if (app.dataset.mode !== mode) {
+      app.dataset.mode = mode;
+      if (mode === 'exact') closeMenu();
+    }
+    hero.style.transform = '';
+
+    if (mode === 'compact') {
+      setVar('--u', 1); setVar('--s', 1); setVar('--tx', '0px'); setVar('--ty', '0px');
+      setVar('--scrim', 0); setVar('--hero-top', '0px');
+      return;
+    }
+
+    var sc = Math.max(vw / DW, vh / DH);
+    var visW = Math.min(DW, vw / sc), visH = Math.min(DH, vh / sc);
+    var u, tx, ty, heroTop;
+    if (mode === 'exact') {
+      var k = Math.min(1, visW / DW);
+      u = Math.min(sc * k, vh / UI_MIN_H);
+      tx = vw / 2 - DW * 0.5 * sc;
+      heroTop = Math.max(0, vh - HERO_H * u) * 0.495449;
+    } else {
+      u = ut;
+      var bias = 0.22 * (1 - visW / DW);
+      tx = vw / 2 - DW * (0.5 + bias) * sc;
+      heroTop = clamp((vh - HERO_H * u) * 0.495449, HEAD_H * u + 28 * u, vh - HERO_H * u - 28 * u);
+    }
+    tx = Math.min(0, Math.max(vw - DW * sc, tx));
+    ty = (vh - DH * sc) / 2;
+    setVar('--s', sc); setVar('--tx', tx + 'px'); setVar('--ty', ty + 'px'); setVar('--u', u);
+    setVar('--scrim', Math.min(1, Math.max(0, (DH - visH) / 240)) * 0.45);
+    setVar('--hero-top', heroTop + 'px');
+    if (mode === 'tablet') fitHero(vh, u, heroTop);
+  }
+
+  function fitHero(vh, u, heroTop) {
+    var h = hero.offsetHeight;
+    var avail = vh - heroTop - 20 * u;
+    if (h > avail) hero.style.transform = 'scale(' + Math.max(0.55, avail / h) + ')';
+  }
+
+  /* ---------- menu ---------- */
+  function openMenu() { app.dataset.menu = 'open'; btn.setAttribute('aria-expanded', 'true'); }
+  function closeMenu() { app.dataset.menu = 'closed'; btn.setAttribute('aria-expanded', 'false'); }
+  btn.addEventListener('click', function () { app.dataset.menu === 'open' ? closeMenu() : openMenu(); });
+  document.getElementById('scrim').addEventListener('click', closeMenu);
+  document.getElementById('links').addEventListener('click', function (e) { if (e.target.closest('a')) closeMenu(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && app.dataset.menu === 'open') { closeMenu(); btn.focus(); } });
+
+  /* ---------- resize ---------- */
+  var raf = 0;
+  function schedule() { if (!raf) raf = requestAnimationFrame(function () { raf = 0; layout(); }); }
+  window.addEventListener('resize', schedule);
+  window.addEventListener('orientationchange', schedule);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', schedule);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  layout();
+
+  /* ---------- entrance ---------- */
+  var lines = Array.prototype.slice.call(document.querySelectorAll('h1 .ln > span'));
+  var para = hero.querySelector('p');
+  var explore = hero.querySelector('.explore');
+  var riseExact = [head.querySelector('.logo')].concat(Array.prototype.slice.call(document.querySelectorAll('#links a')), [head.querySelector('.signup')]);
+  var riseOther = [head.querySelector('.logo'), btn];
+  var rise = app.dataset.mode === 'exact' ? riseExact : riseOther;
+  var all = lines.concat(rise, [para, explore, head, hero]);
+
+  function clearAll() {
+    root.classList.remove('pre', 'pre-rm');
+    all.forEach(function (el) {
+      el.getAnimations().forEach(function (a) { a.cancel(); });
+      el.style.opacity = ''; el.style.transform = ''; el.style.clipPath = '';
+    });
+  }
+
+  // initial states are applied before first paint by the html.pre / html.pre-rm classes set in <head>
+  var videoReady = new Promise(function (res) {
+    if (vid.readyState >= 2 || vid.error) return res();
+    vid.addEventListener('loadeddata', res, { once: true });
+    vid.addEventListener('error', res, { once: true });
+  });
+  var fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  var timeout = new Promise(function (res) { setTimeout(res, 1000); });
+
+  Promise.race([Promise.all([fontsReady, videoReady]), timeout]).then(function () {
+    requestAnimationFrame(run);
+  });
+
+  function run() {
+    var anims = [];
+    function go(el, frames, opts) {
+      var a = el.animate(frames, Object.assign({ fill: 'both' }, opts));
+      anims.push(a);
+      return a;
+    }
+    if (reduced) {
+      go(head, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'linear' });
+      go(hero, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'linear' });
+    } else {
+      lines.forEach(function (el, i) {
+        go(el, [{ transform: 'translateY(112%)' }, { transform: 'none' }], { duration: 900, delay: 380 + i * 120, easing: EXPO });
+      });
+      rise.forEach(function (el, i) {
+        go(el, [{ opacity: 0, transform: 'translateY(9px)' }, { opacity: 1, transform: 'none' }], { duration: 540, delay: 90 + i * 55, easing: SOFT });
+      });
+      go(para, [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 680, delay: 860, easing: SOFT });
+      go(explore, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 600, delay: 1060, easing: EXPO });
+    }
+    // animations now hold the same start state, so the pre-paint class can go in this same frame
+    root.classList.remove('pre', 'pre-rm');
+    var done = false;
+    function finish() { if (done) return; done = true; clearAll(); }
+    Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); })).then(finish);
+    setTimeout(finish, 3500);
+  }
+  setTimeout(function () { if (!document.getAnimations().length) clearAll(); }, 3500);
+})();
+</script>
+</body>
+</html>
