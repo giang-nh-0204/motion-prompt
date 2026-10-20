@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<title>Iris — Smart AI Assistant</title>
+<meta name="description" content="Iris: easy to start, effortless to explore, capable in every conversation." />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+<style>
+:root { --bg:#0b0b11; --nav:#12131a; --line:rgba(255,255,255,0.06); --text:#fff; --muted:#a3a3b2; --link:#c8c8d4; --violet:#7c4dff; --violet-2:#8f66ff; --nav-h:62px; }
+* { box-sizing:border-box; margin:0; padding:0 }
+html, body { background:var(--bg); color:var(--text) }
+body { font-family:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden }
+a { color:inherit; text-decoration:none }
+button { font:inherit; color:inherit; background:none; border:0; cursor:pointer }
+
+/* ---------- nav ---------- */
+.nav { position:fixed; top:0; left:0; right:0; z-index:20; height:var(--nav-h); background:rgba(18,19,26,0.86); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom:1px solid var(--line) }
+.nav-inner { position:relative; max-width:1344px; height:100%; margin:0 auto; padding:0 68px; display:flex; align-items:center; justify-content:space-between }
+.brand { display:flex; align-items:center; gap:11px; font-weight:600; font-size:21px; letter-spacing:-0.01em }
+.brand-orb { width:26px; height:26px; border-radius:50%; flex:none; background:radial-gradient(circle at 32% 28%, #c9b8ff 0%, #8b6cff 38%, #5b3df0 72%, #3a24b8 100%); box-shadow:0 0 14px rgba(124,77,255,.55), inset -2px -3px 6px rgba(20,8,70,.55) }
+.nav-right { display:flex; align-items:center; gap:30px }
+.nav-links { display:flex; gap:38px; font-size:14px; font-weight:500; color:var(--link) }
+.nav-links a { transition:color .2s }
+.nav-links a:hover { color:#fff }
+.btn-open { display:inline-block; background:#fff; color:#0b0b11; font-weight:600; font-size:14px; padding:10px 19px; border-radius:999px; transition:transform .2s, box-shadow .2s }
+.btn-open:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,255,255,.15) }
+.menu-btn { display:none; position:relative; width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid var(--line); align-items:center; justify-content:center }
+.menu-btn span, .menu-btn::before, .menu-btn::after { content:""; position:absolute; left:50%; top:50%; width:16px; height:1.6px; background:#fff; border-radius:2px; transform:translate(-50%,-50%); transition:transform .25s, background .2s, top .25s }
+.menu-btn::before { top:calc(50% - 5px) }
+.menu-btn::after { top:calc(50% + 5px) }
+.nav.open .menu-btn span { background:transparent }
+.nav.open .menu-btn::before { top:50%; transform:translate(-50%,-50%) rotate(45deg) }
+.nav.open .menu-btn::after { top:50%; transform:translate(-50%,-50%) rotate(-45deg) }
+.mobile-panel { display:none; position:absolute; top:calc(var(--nav-h) + 8px); left:16px; right:16px; background:rgba(20,21,30,.96); border:1px solid var(--line); border-radius:18px; padding:8px; flex-direction:column; box-shadow:0 20px 50px rgba(0,0,0,.5) }
+.mobile-panel a { padding:14px 16px; border-radius:12px; font-weight:500; color:var(--link); transition:background .2s, color .2s }
+.mobile-panel a:hover { background:rgba(255,255,255,.05); color:#fff }
+.nav.open .mobile-panel { display:flex }
+
+/* ---------- hero ---------- */
+.hero { position:relative; min-height:100vh; min-height:100svh; overflow:hidden; isolation:isolate }
+#stage { position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0; touch-action:pan-y }
+.hero::after { content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 1px, transparent 1px 7px),
+              radial-gradient(120% 80% at 50% 0%, transparent 55%, rgba(0,0,0,.45) 100%) }
+.hero-inner { position:relative; z-index:2; pointer-events:none; max-width:1344px; margin:0 auto; min-height:inherit; padding:calc(var(--nav-h) + 40px) 68px 80px; display:flex; flex-direction:column; justify-content:center }
+.copy { max-width:600px; pointer-events:auto }
+h1 { font-size:clamp(40px, 5.1vw, 70px); line-height:1.04; font-weight:700; letter-spacing:-0.025em }
+.sub { margin-top:26px; color:var(--muted); font-size:clamp(17px, 1.65vw, 22px); line-height:1.55; font-weight:400 }
+.btn-try { display:inline-flex; align-items:center; justify-content:center; margin-top:36px; height:59px; padding:0 38px; border-radius:999px; background:linear-gradient(180deg, #8f66ff, #7c4dff); color:#fff; font-weight:600; font-size:20px; letter-spacing:-0.005em; box-shadow:inset 0 1px 0 rgba(255,255,255,.22); transition:transform .25s, filter .25s }
+.btn-try:hover { transform:translateY(-2px); filter:brightness(1.08) }
+.reveal { opacity:0; transform:translateY(18px); animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards }
+.d1 { animation-delay:.08s } .d2 { animation-delay:.2s } .d3 { animation-delay:.32s }
+@keyframes rise { to { opacity:1; transform:none } }
+.loader { position:absolute; z-index:2; width:46px; height:46px; border-radius:50%; border:2px solid rgba(143,102,255,.18); border-top-color:#8f66ff; left:50%; top:50%; transform:translate(-50%,-50%); animation:spin 1s linear infinite; transition:opacity .5s; pointer-events:none }
+.loader.hide { opacity:0 }
+@keyframes spin { from { transform:translate(-50%,-50%) rotate(0deg) } to { transform:translate(-50%,-50%) rotate(360deg) } }
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px) {
+  .nav-inner, .hero-inner { padding-left:40px; padding-right:40px }
+  .nav-links { gap:26px }
+}
+@media (max-width:860px) {
+  .nav-links { display:none }
+  .menu-btn { display:inline-flex }
+  .nav-right { gap:10px }
+  .hero-inner { justify-content:flex-end; text-align:center; align-items:center; padding:calc(var(--nav-h) + 20px) 24px 56px }
+  .copy { max-width:560px }
+  h1 { font-size:clamp(36px, 9.2vw, 56px) }
+  .sub { margin-top:16px }
+  .btn-try { margin-top:26px }
+}
+@media (max-width:480px) {
+  .nav-inner { padding:0 16px }
+  .hero-inner { padding:calc(var(--nav-h) + 16px) 16px 40px }
+  .brand { font-size:19px }
+  .btn-open { padding:9px 15px; font-size:13px }
+  .btn-try { height:54px; padding:0 32px; font-size:18px }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation:none; opacity:1; transform:none }
+}
+</style>
+</head>
+<body>
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#"><span class="brand-orb"></span>Iris</a>
+    <div class="nav-right">
+      <nav class="nav-links"><a href="#">Overview</a><a href="#">Ecosystem</a><a href="#">Socials</a><a href="#">Help</a></nav>
+      <a class="btn-open" href="#">Get Iris</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false"><span></span></button>
+    </div>
+    <div class="mobile-panel"><a href="#">Overview</a><a href="#">Ecosystem</a><a href="#">Socials</a><a href="#">Help</a></div>
+  </div>
+</header>
+<main class="hero" id="hero">
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div class="loader" id="loader"></div>
+  <div class="hero-inner">
+    <div class="copy">
+      <h1 class="reveal d1">Introducing a<br />Smart AI Assistant</h1>
+      <p class="sub reveal d2">Easy to start. Effortless to explore.<br />Capable in every conversation.</p>
+      <a class="btn-try reveal d3" href="#">Start free</a>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+
+const HEAD_GLB = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261018_172206_0181329a-86e2-41c9-8ab8-c496f29aaa53.glb";
+const ARM_GLB  = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261018_172137_cd6086ec-07ef-44dc-bd15-95a450ddaa8c.glb";
+
+/* ---------- menu ---------- */
+const navEl = document.getElementById("nav");
+const menuBtn = document.getElementById("menuBtn");
+menuBtn.addEventListener("click", () => {
+  const open = navEl.classList.toggle("open");
+  menuBtn.setAttribute("aria-expanded", String(open));
+});
+
+/* ---------- renderer / scene ---------- */
+const hero = document.getElementById("hero");
+const canvas = document.getElementById("stage");
+const loader = document.getElementById("loader");
+const copyEl = document.querySelector(".copy");
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0b11);
+const FOV = 28;
+const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
+camera.position.set(0, 0, 8);
+
+function radialTexture(stops, size = 256) {
+  const c = document.createElement("canvas"); c.width = c.height = size;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  for (const [o, col] of stops) g.addColorStop(o, col);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, size, size);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const glowTex = radialTexture([[0, "rgba(160,120,255,1)"], [0.25, "rgba(124,77,255,.55)"], [0.6, "rgba(90,50,230,.12)"], [1, "rgba(60,30,200,0)"]]);
+
+/* dark studio environment: round emissive softboxes, no point lights */
+{
+  const env = new THREE.Scene();
+  env.background = new THREE.Color(0x030305);
+  const box = (color, w, h, pos, intensity) => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(intensity) }));
+    m.scale.set(w, h, 0.3); m.position.set(...pos); m.lookAt(0, 0, 0); env.add(m);
+  };
+  box(0xffffff, 5, 3.2, [-3, 4.5, 4], 3.2);
+  box(0xffffff, 1.2, 6, [6, 0.5, 2], 1.1);
+  box(0xffffff, 3, 1, [1.5, 5, -1], 0.8);
+  box(0x7c4dff, 4, 5, [-5, 0, -4], 1.0);
+  box(0x7c4dff, 4, 5, [5, 0, -4], 1.0);
+  box(0x5b30ff, 6, 3, [0, -5, 1], 0.35);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(env, 0.02).texture;
+  scene.environmentIntensity = 1.0;
+  pmrem.dispose();
+}
+scene.add(new THREE.HemisphereLight(0xdcd8f0, 0x1a0f3a, 2.3));
+const dir = new THREE.DirectionalLight(0xffffff, 0.55); dir.position.set(-3, 4, 5); scene.add(dir);
+
+/* post-processing */
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.4, 0.92);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* fresnel rim shell */
+function rimMaterial(color, power, strength) {
+  return new THREE.ShaderMaterial({
+    uniforms: { uColor: { value: new THREE.Color(color) }, uPower: { value: power }, uStrength: { value: strength } },
+    vertexShader: `varying vec3 vN; varying vec3 vV;
+      void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform vec3 uColor; uniform float uPower; uniform float uStrength; varying vec3 vN; varying vec3 vV;
+      void main(){ float f = pow(1.0 - max(dot(normalize(vN), normalize(vV)), 0.0), uPower); gl_FragColor = vec4(uColor * f * uStrength, f); }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+  });
+}
+
+/* rig */
+const robot = new THREE.Group();
+const body = new THREE.Group();
+const head = new THREE.Group();
+robot.add(body); body.add(head); scene.add(robot);
+
+/* haze + floor glow */
+const haze = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x7a55ff, opacity: 0.06, transparent: true, blending: THREE.AdditiveBlending, toneMapped: false, depthWrite: false }));
+haze.scale.setScalar(7.5); haze.position.set(0, 0.1, -3); scene.add(haze);
+const floorGlow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: glowTex, color: 0x8f6bff, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+floorGlow.position.set(0, -2.05, -0.6); floorGlow.scale.set(3.4, 0.42, 1); scene.add(floorGlow);
+
+/* ---------- model prep ---------- */
+function prepareModel(root, { glossy = false, rim = null, tint = "#ffffff", useMap = false, smooth = false } = {}) {
+  const meshes = [];
+  root.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  for (const mesh of meshes) {
+    if (smooth) {
+      let g = mesh.geometry.clone();
+      for (const a of ["normal", "uv", "uv1", "tangent", "color"]) if (g.attributes[a]) g.deleteAttribute(a);
+      g = mergeVertices(g, 1e-3);
+      g.computeVertexNormals();
+      mesh.geometry = g;
+    }
+    const old = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+    const mat = new THREE.MeshPhysicalMaterial({ map: useMap && old && old.map ? old.map : null, color: new THREE.Color(tint) });
+    if (glossy) { mat.metalness = 0.1; mat.roughness = 0.3; mat.clearcoat = 1.0; mat.clearcoatRoughness = 0.16; mat.envMapIntensity = 0.9; }
+    else { mat.metalness = 0; mat.roughness = 0.48; mat.clearcoat = 0.3; mat.clearcoatRoughness = 0.4; mat.envMapIntensity = 0.55; }
+    mesh.material = mat;
+    if (rim) {
+      const shell = new THREE.Mesh(mesh.geometry, rimMaterial(rim.color, rim.power, rim.strength));
+      shell.renderOrder = 2; shell.name = "rimShell"; mesh.add(shell);
+    }
+  }
+  return meshes;
+}
+
+function normaliseHead(root) {
+  const box = new THREE.Box3().setFromObject(root);
+  const size = box.getSize(new THREE.Vector3());
+  root.scale.setScalar(2 / (size.z || 1));
+  root.updateMatrixWorld(true);
+  box.setFromObject(root);
+  const c = box.getCenter(new THREE.Vector3());
+  root.position.set(-c.x, -(box.min.y + 1), -c.z);
+}
+function normaliseArm(obj) {
+  const box = new THREE.Box3().setFromObject(obj);
+  const size = box.getSize(new THREE.Vector3());
+  obj.scale.setScalar(0.78 / (size.y || 1));
+  obj.updateMatrixWorld(true);
+  box.setFromObject(obj);
+  obj.position.sub(box.getCenter(new THREE.Vector3()));
+  const g = new THREE.Group(); g.add(obj); return g;
+}
+
+const eyes = [];
+let antennaGlows = [];
+
+function mountHead(root) {
+  head.add(root);
+  robot.updateMatrixWorld(true);
+  const meshes = [];
+  root.traverse((o) => { if (o.isMesh && o.name !== "rimShell") meshes.push(o); });
+
+  // a) sphere radius from a front raycast
+  const ray = new THREE.Raycaster(new THREE.Vector3(0, 0, 5), new THREE.Vector3(0, 0, -1));
+  const hits = ray.intersectObjects(meshes, false);
+  const R = THREE.MathUtils.clamp(hits.length ? hits[0].point.length() : 1, 0.85, 1.1);
+
+  // b) perfectly spherical normals on the shell
+  const v = new THREE.Vector3(), n = new THREE.Vector3();
+  const nm = new THREE.Matrix3(), inv = new THREE.Matrix3();
+  for (const mesh of meshes) {
+    const pos = mesh.geometry.getAttribute("position");
+    const nor = mesh.geometry.getAttribute("normal");
+    if (!nor) continue;
+    nm.getNormalMatrix(mesh.matrixWorld); inv.copy(nm).invert();
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      const d = v.length();
+      if (Math.abs(d - R) <= R * 0.07) {
+        n.copy(v).normalize().applyMatrix3(inv).normalize();
+        nor.setXYZ(i, n.x, n.y, n.z);
+      }
+    }
+    nor.needsUpdate = true;
+  }
+
+  // c) visor
+  addVisor(R);
+  // d) eyes
+  const EZ = Math.sqrt(Math.max(0, (R * 1.055) ** 2 - 0.43 ** 2 - 0.08 ** 2));
+  for (const sx of [-1, 1]) eyes.push(makeEye(new THREE.Vector3(0.43 * sx, -0.08, EZ)));
+  // e) antenna balls
+  addAntennaBalls(meshes);
+}
+
+function roundedRect(w, h, r, cy) {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2 + cy;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+function subdivide(g) {
+  const p = g.getAttribute("position"), out = [];
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  const ab = new THREE.Vector3(), bc = new THREE.Vector3(), ca = new THREE.Vector3();
+  const push = (...vs) => vs.forEach((q) => out.push(q.x, q.y, q.z));
+  for (let i = 0; i < p.count; i += 3) {
+    a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2);
+    ab.addVectors(a, b).multiplyScalar(0.5); bc.addVectors(b, c).multiplyScalar(0.5); ca.addVectors(c, a).multiplyScalar(0.5);
+    push(a, ab, ca, ab, b, bc, ca, bc, c, ab, bc, ca);
+  }
+  const ng = new THREE.BufferGeometry();
+  ng.setAttribute("position", new THREE.Float32BufferAttribute(out, 3));
+  return ng;
+}
+function sphericalPatch(w, h, r, cy, radius) {
+  let g = new THREE.ShapeGeometry(roundedRect(w, h, r, cy), 48).toNonIndexed();
+  for (let i = 0; i < 3; i++) g = subdivide(g);
+  const p = g.getAttribute("position"), nor = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i);
+    const z = Math.sqrt(Math.max(0, radius * radius - x * x - y * y));
+    p.setZ(i, z);
+    const l = Math.hypot(x, y, z) || 1;
+    nor[i * 3] = x / l; nor[i * 3 + 1] = y / l; nor[i * 3 + 2] = z / l;
+  }
+  g.setAttribute("normal", new THREE.BufferAttribute(nor, 3));
+  return g;
+}
+function addVisor(R) {
+  const bezel = new THREE.Mesh(sphericalPatch(1.86, 1.12, 0.46, -0.07, R * 1.03),
+    new THREE.MeshPhysicalMaterial({ color: 0x0c0c10, roughness: 0.3, metalness: 0.3, clearcoat: 0.8, polygonOffset: true, polygonOffsetFactor: -6, polygonOffsetUnits: -6 }));
+  bezel.renderOrder = 3;
+  const glass = new THREE.Mesh(sphericalPatch(1.74, 1.0, 0.4, -0.07, R * 1.036),
+    new THREE.MeshPhysicalMaterial({ color: 0x000000, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.1, envMapIntensity: 0.9, polygonOffset: true, polygonOffsetFactor: -8, polygonOffsetUnits: -8 }));
+  glass.renderOrder = 4;
+  head.add(bezel, glass);
+}
+
+const irisTex = radialTexture([[0, "#d7c9ff"], [0.45, "#a07bff"], [0.8, "#7646f2"], [1, "#5c2fe0"]]);
+function eyeMat(opts) {
+  return new THREE.MeshBasicMaterial(Object.assign({ toneMapped: false, depthWrite: false, depthTest: false }, opts));
+}
+function makeEye(position) {
+  const g = new THREE.Group();
+  g.position.copy(position);
+  g.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), position.clone().normalize());
+  const add = (geo, mat, z, order = 10, parent = g) => { const m = new THREE.Mesh(geo, mat); m.position.z = z; m.renderOrder = order; parent.add(m); return m; };
+  add(new THREE.CircleGeometry(0.42, 48), eyeMat({ map: glowTex, color: 0x8a5cff, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending }), -0.004, 9);
+  add(new THREE.RingGeometry(0.168, 0.212, 64), eyeMat({ color: new THREE.Color(1.1, 0.88, 2.0) }), 0);
+  add(new THREE.CircleGeometry(0.17, 48), eyeMat({ map: irisTex, color: new THREE.Color(1.0, 0.95, 1.15) }), 0.001);
+  const pupilWrap = new THREE.Group(); g.add(pupilWrap);
+  add(new THREE.CircleGeometry(0.083, 32), eyeMat({ color: 0x07040f }), 0.003, 10, pupilWrap);
+  const glint = add(new THREE.CircleGeometry(0.022, 16), eyeMat({ color: 0xffffff }), 0.005, 10, pupilWrap);
+  glint.position.set(0.032, 0.034, 0.005);
+  head.add(g);
+  return { group: g, pupilWrap };
+}
+
+function addAntennaBalls(meshes) {
+  const pts = [], v = new THREE.Vector3();
+  for (const mesh of meshes) {
+    const pos = mesh.geometry.getAttribute("position");
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      if (v.y > 0.75 && Math.abs(v.x) > 0.15) pts.push(v.clone());
+    }
+  }
+  const mat = new THREE.MeshPhysicalMaterial({ color: 0x8b62ff, emissive: 0x6a3dff, emissiveIntensity: 1.5, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.14 });
+  for (const side of [-1, 1]) {
+    const sp = pts.filter((p) => Math.sign(p.x) === side);
+    if (!sp.length) continue;
+    const top = sp.reduce((a, b) => (b.y > a.y ? b : a));
+    const near = sp.filter((p) => p.distanceTo(top) < 0.2);
+    const c = near.reduce((a, b) => a.add(b), new THREE.Vector3()).multiplyScalar(1 / near.length);
+    c.y = Math.max(c.y, top.y - 0.1);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.118, 32, 16), mat);
+    ball.position.copy(c);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x9a6bff, opacity: 0.85, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+    glow.scale.setScalar(0.5); glow.position.copy(c);
+    head.add(ball, glow);
+    antennaGlows.push(glow.material);
+  }
+}
+
+/* ---------- fallbacks ---------- */
+function fallbackHead() {
+  const g = new THREE.Group();
+  const sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 48), new THREE.MeshPhysicalMaterial({ color: 0x2c2c35, roughness: 0.26, clearcoat: 1 }));
+  g.add(sphere);
+  for (const sx of [-1, 1]) {
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 48), sphere.material.clone());
+    cap.rotation.z = Math.PI / 2; cap.position.set(1.0 * sx, 0, 0); g.add(cap);
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.55, 16), sphere.material.clone());
+    rod.position.set(0.42 * sx, 1.15, 0); rod.rotation.z = -0.25 * sx; g.add(rod);
+  }
+  return g;
+}
+function fallbackArm() {
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.42, 8, 24), new THREE.MeshPhysicalMaterial({ color: 0x1b1b21, roughness: 0.48, clearcoat: 0.3 })));
+  return g;
+}
+
+/* ---------- load ---------- */
+const gltfLoader = new GLTFLoader();
+const loadGLB = (url) => new Promise((res, rej) => gltfLoader.load(url, (g) => res(g.scene), undefined, rej));
+const arms = [];
+const ARM_REST = [
+  { x: -1.32, y: -0.72, z: 0.15, rz: -0.62, phase: 0 },
+  { x: 1.32, y: -0.72, z: 0.15, rz: 0.62, phase: Math.PI * 0.85 }
+];
+
+Promise.allSettled([loadGLB(HEAD_GLB), loadGLB(ARM_GLB)]).then(([h, a]) => {
+  let headRoot;
+  if (h.status === "fulfilled") {
+    headRoot = h.value;
+    normaliseHead(headRoot);
+    prepareModel(headRoot, { glossy: true, useMap: false, tint: "#4a4a56", rim: { color: 0x8a5cff, power: 4.5, strength: 0.32 } });
+  } else {
+    console.warn("Head GLB failed, using fallback", h.reason);
+    headRoot = fallbackHead();
+    prepareModel(headRoot, { glossy: true, useMap: false, tint: "#2c2c35", rim: { color: 0x8a5cff, power: 4.5, strength: 0.32 } });
+  }
+  mountHead(headRoot);
+
+  let tpl;
+  if (a.status === "fulfilled") {
+    tpl = a.value;
+    prepareModel(tpl, { glossy: false, useMap: false, smooth: true, tint: "#1d1d23", rim: { color: 0x8a5cff, power: 2.6, strength: 1.05 } });
+  } else {
+    console.warn("Arm GLB failed, using fallback", a.reason);
+    tpl = fallbackArm();
+    prepareModel(tpl, { glossy: false, useMap: false, tint: "#1b1b21", rim: { color: 0x8a5cff, power: 2.6, strength: 1.05 } });
+  }
+  const copies = [tpl, tpl.clone(true)];
+  copies.forEach((obj, i) => {
+    const grp = normaliseArm(obj);
+    const r = ARM_REST[i];
+    grp.position.set(r.x, r.y, r.z); grp.rotation.z = r.rz;
+    body.add(grp);
+    arms.push({ group: grp, rest: r });
+  });
+
+  loader.classList.add("hide");
+  robot.scale.setScalar(0.001);
+  intro = 0; introStarted = true;
+});
+
+/* ---------- layout ---------- */
+let W = 1, H = 1, isMobile = false, robotPx = 300;
+const anchor = { x: 0, y: 0 };
+function layout() {
+  W = hero.clientWidth; H = hero.clientHeight;
+  isMobile = W <= 860;
+  renderer.setSize(W, H, false);
+  composer.setSize(W, H);
+  bloom.setSize(W, H);
+  if (!isMobile) {
+    robotPx = Math.min(H * 0.62, W * 0.4, 640);
+    anchor.x = W * 0.695; anchor.y = H * 0.5 + 8;
+  } else {
+    const copyTop = copyEl.getBoundingClientRect().top - hero.getBoundingClientRect().top;
+    const room = Math.max(copyTop - 62, 220);
+    robotPx = Math.min(room * 0.92, W * 0.82);
+    anchor.x = W / 2; anchor.y = 62 + room * 0.5;
+  }
+  camera.aspect = W / H;
+  camera.position.z = (3.4 * H) / (robotPx * 2 * Math.tan(THREE.MathUtils.degToRad(FOV) / 2));
+  camera.setViewOffset(W, H, W / 2 - anchor.x, H / 2 - anchor.y, W, H);
+  camera.updateProjectionMatrix();
+  loader.style.left = anchor.x + "px"; loader.style.top = anchor.y + "px";
+}
+new ResizeObserver(layout).observe(hero);
+layout();
+
+/* ---------- interaction ---------- */
+const target = { x: 0, y: 0 }, look = { x: 0, y: 0 };
+let lastMove = -Infinity;
+function onPoint(cx, cy) {
+  const rx = isMobile ? W * 0.5 : Math.max(W * 0.55, 500);
+  const ry = isMobile ? H * 0.5 : Math.max(H * 0.55, 400);
+  const r = hero.getBoundingClientRect();
+  target.x = THREE.MathUtils.clamp((cx - r.left - anchor.x) / rx, -1.2, 1.2);
+  target.y = THREE.MathUtils.clamp((cy - r.top - anchor.y) / ry, -1.2, 1.2);
+  lastMove = performance.now() / 1000;
+}
+window.addEventListener("pointermove", (e) => onPoint(e.clientX, e.clientY), { passive: true });
+window.addEventListener("pointerdown", (e) => onPoint(e.clientX, e.clientY), { passive: true });
+window.addEventListener("touchmove", (e) => { const t = e.touches[0]; if (t) onPoint(t.clientX, t.clientY); }, { passive: true });
+
+let visible = true;
+new IntersectionObserver((ents) => { visible = ents[0].isIntersecting; }).observe(hero);
+
+/* ---------- loop ---------- */
+let intro = 1, introStarted = false;
+let nextBlink = 2.5, blinkStart = -1;
+const clock = new THREE.Clock();
+const m = reducedMotion ? 0.25 : 1;
+
+function frame() {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, clock.getDelta());
+  const t = clock.elapsedTime;
+  if (!visible) return;
+
+  if (t - lastMove > 3.5) { target.x = Math.sin(t * 0.45) * 0.45; target.y = Math.sin(t * 0.31 + 1.2) * 0.2; }
+  const s = 1 - Math.pow(0.0025, dt);
+  look.x += (target.x - look.x) * s;
+  look.y += (target.y - look.y) * s;
+
+  if (introStarted && intro < 1) {
+    intro = Math.min(1, intro + dt * 1.4);
+    const k = intro;
+    robot.scale.setScalar(Math.max(0.001, 1 + 2.4 * Math.pow(k - 1, 3) + 1.4 * Math.pow(k - 1, 2)));
+  }
+
+  const bob = Math.sin(t * 1.6) * 0.09 * m;
+  robot.position.y = bob;
+  head.rotation.set(look.y * 0.42, look.x * 0.5, -look.x * 0.06 + Math.sin(t * 1.1) * 0.015 * m);
+  body.rotation.set(look.y * 0.12, look.x * 0.28, 0);
+
+  for (const { group, rest } of arms) {
+    const w = Math.sin(t * 2.0 + rest.phase);
+    const sg = Math.sign(rest.x);
+    group.position.y = rest.y + w * 0.13 * m - bob * 0.35;
+    group.position.x = rest.x + sg * look.x * -0.04;
+    group.rotation.z = rest.rz + w * 0.12 * sg * m;
+    group.rotation.x = Math.sin(t * 1.3 + rest.phase) * 0.08 * m;
+  }
+
+  if (t > nextBlink) { blinkStart = t; nextBlink = t + 2.5 + Math.random() * 3.5; }
+  let sy = 1;
+  if (blinkStart >= 0) {
+    const p = (t - blinkStart) / 0.32;
+    if (p < 1) sy = p < 0.5 ? 1 - 0.92 * (p / 0.5) : 0.08 + 0.92 * ((p - 0.5) / 0.5);
+  }
+  for (const e of eyes) {
+    e.pupilWrap.position.set(THREE.MathUtils.clamp(look.x * 0.075, -0.07, 0.07), THREE.MathUtils.clamp(-look.y * 0.06, -0.06, 0.06), 0);
+    e.group.scale.y = sy;
+  }
+
+  floorGlow.scale.set(3.4 - bob * 3, 0.42 - bob * 0.4, 1);
+  floorGlow.material.opacity = 0.7 + (0.09 - bob) * 1.5;
+  const ag = 0.7 * (0.85 + Math.sin(t * 1.6) * 0.15) + 0.15;
+  for (const mat of antennaGlows) mat.opacity = ag;
+
+  composer.render();
+}
+frame();
+</script>
+</body>
+</html>
