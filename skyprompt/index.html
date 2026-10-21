@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skyprompt — Prompt-to-Pixel Art, No Cost!</title>
+<meta name="description" content="Turn plain words into images you love, lesson by lesson, from first idea to finished piece. A free online course on AI image generation.">
+<meta name="theme-color" content="#3195e0">
+<link rel="icon" href="data:,">
+<link rel="preload" href="dm-serif-display.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="poppins-700.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+/* pre-paint entrance state; removed by the timeline on its first frame, or by this timer if the script never runs */
+(function () {
+  try {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('pre');
+      setTimeout(function () { document.documentElement.classList.remove('pre'); }, 4000);
+    }
+  } catch (e) {}
+})();
+</script>
+<style>
+@font-face { font-family: "DM Serif Display"; font-weight: 400; font-style: normal; font-display: swap; src: url("dm-serif-display.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 400; font-style: normal; font-display: swap; src: url("poppins-400.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 600; font-style: normal; font-display: swap; src: url("poppins-600.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 700; font-style: normal; font-display: swap; src: url("poppins-700.woff2") format("woff2"); }
+
+:root {
+  --u: max(100vw / 1440, 100vh / 900);
+  --n: clamp(.62px, min(100vw / 1440, 100vh / 900), 1.6px);
+  --ink: #161c08;
+  --yellow: #f6f03b;
+  --sky-top: #3195e0;
+  --sky-bot: #49a9f3;
+  --serif: "DM Serif Display", Georgia, serif;
+  --sans: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --plate: url("https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/dc4ac5c7-4eee-48ab-814c-cbba3c9fd1b7.jpg");
+  --swipe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60' preserveAspectRatio='none'%3E%3Cpath fill='%23f6f03b' d='M4 14 L11 9 L22 12 L31 7 L45 10 L58 6 L72 9 L88 5 L101 9 L117 4 L132 8 L149 5 L164 9 L181 4 L193 10 L198 20 L196 31 L199 42 L194 52 L182 55 L168 50 L152 55 L139 51 L121 56 L104 52 L89 57 L73 52 L57 56 L40 51 L27 55 L13 51 L3 54 L1 42 L5 30 L1 20 Z'/%3E%3C/svg%3E");
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bot)); color: #fff;
+  font-family: var(--sans); font-weight: 400; overflow: hidden;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- 1440x900 frame ---------- */
+.page { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+.stage, .copy {
+  position: absolute; left: 50%; top: 0; width: calc(1440 * var(--u)); height: calc(900 * var(--u));
+  transform: translateX(-50%);
+}
+.stage { z-index: 0; overflow: hidden; }
+.plate { position: absolute; inset: 0; background: #49a9f3 var(--plate) 0 0 / 100% 100% no-repeat; }
+.loop {
+  position: absolute; top: 0; left: -5.556%; width: 111.11%; height: 100%; display: block;
+  object-fit: fill; pointer-events: none;
+}
+.copy { z-index: 2; pointer-events: none; }
+.copy > * { pointer-events: auto; }
+.scene { position: absolute; inset: 0; }
+.copy .in-frame, .scene .in-frame { position: absolute; }
+
+/* ---------- nav (viewport units) ---------- */
+.nav { position: fixed; inset: 0 0 auto 0; z-index: 10; height: calc(88 * var(--n)); pointer-events: none; }
+.nav > * { pointer-events: auto; position: absolute; }
+.logo { left: calc(118 * var(--n)); top: calc(22 * var(--n)); width: calc(44 * var(--n)); height: calc(44 * var(--n)); display: block; color: #fff; }
+.logo svg { width: 100%; height: 100%; display: block; }
+.links { left: 50%; top: calc(44 * var(--n)); transform: translate(-50%, -50%); display: flex; gap: calc(35.5 * var(--n)); white-space: nowrap; }
+.links a { font-size: calc(17 * var(--n)); color: #fff; font-weight: 400; position: relative; }
+.links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1.5px; background: #fff; transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+.links a:hover::after { transform: scaleX(1); }
+.xbtn {
+  right: calc(283 * var(--n)); top: calc(22 * var(--n)); width: calc(50 * var(--n)); height: calc(50 * var(--n)); border-radius: 50%;
+  background: rgba(255,255,255,.28); display: grid; place-items: center; color: #fff; transition: background .2s;
+}
+.xbtn:hover { background: rgba(255,255,255,.42); }
+.xbtn svg { width: 40%; height: 40%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.pill {
+  display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: #fff; color: var(--ink);
+  font-family: var(--sans); font-weight: 600; white-space: nowrap; line-height: 1;
+  box-shadow: 0 6px 18px rgba(20,60,120,.18); transition: transform .25s ease, box-shadow .25s ease;
+}
+.pill:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(20,60,120,.24); }
+.nav .pill { right: calc(107 * var(--n)); top: calc(25 * var(--n)); width: calc(168 * var(--n)); height: calc(44 * var(--n)); font-size: calc(15 * var(--n)); }
+.menu-btn { display: none; }
+
+/* ---------- highlighter labels ---------- */
+.hl {
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--sans); font-weight: 700; color: var(--ink); letter-spacing: -.018em; line-height: 1; white-space: nowrap;
+}
+.hl::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--swipe) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 calc(1.5 * var(--u)) rgba(246,240,59,.75));
+}
+.hl > span { position: relative; display: block; }
+
+/* ---------- headline block (frame units) ---------- */
+.hl-begin { left: calc(657 * var(--u)); top: calc(117 * var(--u)); width: calc(131 * var(--u)); height: calc(44 * var(--u)); font-size: calc(40 * var(--u)); }
+.headline {
+  left: 0; width: 100%; top: calc(140 * var(--u)); text-align: center;
+  font-family: var(--serif); font-weight: 400; font-size: calc(103 * var(--u)); line-height: 1.1; color: #fff;
+  -webkit-text-stroke: calc(1.1 * var(--u)) #fff; letter-spacing: -.005em; white-space: nowrap;
+  text-shadow: 0 calc(4 * var(--u)) calc(24 * var(--u)) rgba(20,70,140,.18);
+}
+.hl-cost { left: calc(638 * var(--u)); top: calc(241 * var(--u)); width: calc(176 * var(--u)); height: calc(45 * var(--u)); font-size: calc(39 * var(--u)); }
+.subline {
+  left: 0; width: 100%; top: calc(312 * var(--u)); text-align: center;
+  font-size: calc(17.2 * var(--u)); line-height: calc(24.5 * var(--u)); color: #fff; font-weight: 400;
+  text-shadow: 0 1px calc(10 * var(--u)) rgba(20,70,140,.2);
+}
+
+/* ---------- cards ---------- */
+.card {
+  position: absolute; width: calc(132 * var(--u)); height: calc(162 * var(--u));
+  border: calc(5 * var(--u)) solid #fff; border-radius: calc(12 * var(--u)); overflow: hidden; background: #fff;
+  box-shadow: 0 calc(10 * var(--u)) calc(28 * var(--u)) rgba(20,60,120,.22), 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(20,60,120,.12);
+  transform: rotate(var(--r)); transform-origin: 50% 80%;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s ease;
+}
+.card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card:hover { transform: translateY(calc(-18 * var(--u))) rotate(0deg) scale(1.07); box-shadow: 0 calc(22 * var(--u)) calc(40 * var(--u)) rgba(20,60,120,.28); z-index: 5; }
+.card--1 { left: calc(472 * var(--u)); top: calc(419 * var(--u)); --r: -12deg; }
+.card--2 { left: calc(601 * var(--u)); top: calc(407 * var(--u)); --r: -4deg; }
+.card--3 { left: calc(711 * var(--u)); top: calc(409 * var(--u)); --r: 4deg; }
+.card--4 { left: calc(827 * var(--u)); top: calc(419 * var(--u)); --r: 12deg; }
+
+/* ---------- labels + arrows ---------- */
+.hl-zero { left: calc(395 * var(--u)); top: calc(424 * var(--u)); height: calc(30 * var(--u)); padding: 0 calc(10 * var(--u)); font-size: calc(17 * var(--u)); transform: rotate(-11deg); transform-origin: 0 50%; }
+.hl-real { left: calc(927 * var(--u)); top: calc(518 * var(--u)); height: calc(30 * var(--u)); padding: 0 calc(10 * var(--u)); font-size: calc(17 * var(--u)); transform: rotate(-6deg); transform-origin: 0 50%; }
+.arrow { position: absolute; pointer-events: none; overflow: visible; }
+.arrow path { fill: none; stroke: var(--yellow); stroke-width: calc(3 * var(--u)); stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 calc(1.5 * var(--u)) rgba(246,240,59,.6)); }
+.arrow--zero { left: calc(404 * var(--u)); top: calc(452 * var(--u)); width: calc(80 * var(--u)); height: calc(70 * var(--u)); }
+.arrow--up { left: calc(930 * var(--u)); top: calc(452 * var(--u)); width: calc(70 * var(--u)); height: calc(66 * var(--u)); }
+.arrow--down { left: calc(975 * var(--u)); top: calc(552 * var(--u)); width: calc(70 * var(--u)); height: calc(70 * var(--u)); }
+
+/* ---------- call to action on the island ---------- */
+.hl-free { left: calc(672 * var(--u)); top: calc(584 * var(--u)); width: calc(96 * var(--u)); height: calc(25 * var(--u)); font-size: calc(16 * var(--u)); }
+.cta { left: calc(622 * var(--u)); top: calc(624 * var(--u)); width: calc(195 * var(--u)); height: calc(44 * var(--u)); font-size: calc(17 * var(--u)); }
+.note { left: 0; width: 100%; top: calc(682 * var(--u)); text-align: center; font-size: calc(15.6 * var(--u)); color: #fff; text-shadow: 0 1px calc(8 * var(--u)) rgba(20,70,140,.25); }
+
+/* ---------- pre-paint entrance state ---------- */
+html.pre .logo, html.pre .xbtn, html.pre .nav .pill, html.pre .links, html.pre .menu-btn { opacity: 0; }
+html.pre .hl-begin::before, html.pre .hl-cost::before { clip-path: inset(0 100% 0 0); }
+html.pre .hl-begin > span, html.pre .hl-cost > span { opacity: 0; }
+html.pre .headline, html.pre .subline { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .loop { display: none; }
+  * { transition: none !important; }
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 820px) {
+  :root { --u: calc(100vw / 720); }
+  html, body { height: auto; overflow: auto; overflow-x: hidden; }
+  .page { height: auto; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+  .nav { height: auto; position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; background: linear-gradient(180deg, rgba(49,149,224,.95), rgba(49,149,224,0)); }
+  .nav > * { position: static; }
+  .logo { width: 40px; height: 40px; }
+  .links { display: none; }
+  .xbtn { display: none; }
+  .nav .pill { width: auto; height: 42px; padding: 0 18px; font-size: 14px; margin-left: auto; }
+  .menu-btn { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.28); color: #fff; }
+  .menu-btn svg { width: 44%; height: 44%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+  .copy { position: relative; left: auto; top: auto; width: 100%; height: auto; transform: none; padding: 8px 18px 20px; text-align: center; }
+  .copy .in-frame { position: static; }
+  .copy .hl.in-frame { position: relative; left: auto; top: auto; display: inline-flex; height: auto; width: auto; padding: 4px 14px; margin: 0 auto; }
+  .hl-begin { font-size: clamp(26px, 7.6vw, 36px); }
+  .headline { display: block; margin-top: 10px; font-size: clamp(40px, 11.2vw, 64px); line-height: 1.05; white-space: normal; -webkit-text-stroke: .8px #fff; }
+  .hl-cost { font-size: clamp(26px, 7.4vw, 34px); margin-top: 12px; }
+  .subline { display: block; margin-top: 16px; font-size: clamp(15px, 4vw, 17px); line-height: 1.5; max-width: 34em; margin-left: auto; margin-right: auto; }
+  .subline br { display: none; }
+
+  .stage {
+    position: relative; left: 0; top: auto; transform: none; width: 100%; height: calc(560 * var(--u)); margin-top: 6px;
+  }
+  .stage .scene { position: absolute; inset: auto; left: 50%; top: 0; width: calc(1440 * var(--u)); height: calc(900 * var(--u)); transform: translate(-50%, calc(-340 * var(--u))); }
+  .stage::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(140 * var(--u)); z-index: 3; pointer-events: none;
+    background: linear-gradient(180deg, #3f9fe9 0%, rgba(63,159,233,0) 100%);
+  }
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="#" aria-label="Skyprompt home">
+    <svg viewBox="0 0 44 44" aria-hidden="true"><g fill="#fff"><ellipse cx="22" cy="9" rx="6" ry="9"/><ellipse cx="22" cy="35" rx="6" ry="9"/><ellipse cx="22" cy="22" rx="6" ry="9" transform="rotate(60 22 22) translate(0 -13)"/><ellipse cx="22" cy="22" rx="6" ry="9" transform="rotate(60 22 22) translate(0 13)"/><ellipse cx="22" cy="22" rx="6" ry="9" transform="rotate(-60 22 22) translate(0 -13)"/><ellipse cx="22" cy="22" rx="6" ry="9" transform="rotate(-60 22 22) translate(0 13)"/></g><circle cx="22" cy="22" r="4.2" fill="#3195e0"/></svg>
+  </a>
+  <nav class="links" aria-label="Primary">
+    <a href="#">Story</a><a href="#">Study Plan</a><a href="#">Showcase</a><a href="#">Classroom</a><a href="#">Q&amp;A</a>
+  </nav>
+  <button class="xbtn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+  <a class="pill" href="#">Begin the Journey</a>
+  <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</header>
+
+<main class="page">
+  <section class="copy" aria-label="Course introduction">
+    <span class="hl hl-begin in-frame"><span>Begin</span></span>
+    <h1 class="headline in-frame">Prompt-to-Pixel Art</h1>
+    <span class="hl hl-cost in-frame"><span>No Cost!</span></span>
+    <p class="subline in-frame">Turn plain words into images you love — lesson <br>by lesson, from first idea to finished piece.</p>
+  </section>
+
+  <div class="stage">
+    <div class="scene">
+      <div class="plate" role="img" aria-label="A small grassy island with a waterfall floating in a clear blue sky above a bank of clouds"></div>
+      <video class="loop" autoplay muted loop playsinline preload="auto" aria-hidden="true"
+             poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/dc4ac5c7-4eee-48ab-814c-cbba3c9fd1b7.jpg"
+             src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/81764d30-8120-4ab5-8491-4dd852b82496.mp4"></video>
+
+      <a class="card card--1" href="#" aria-label="Cottage on a sea cliff"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/37b0e4f8-9780-409b-9aa4-f855a9a4ef24.webp" alt="" loading="eager"></a>
+      <a class="card card--2" href="#" aria-label="Orange kitten in a blue beanie and scarf"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/02be94e0-6903-4edd-b5ec-a10eb62d166e.webp" alt="" loading="eager"></a>
+      <a class="card card--3" href="#" aria-label="Smiling succulent in a terracotta pot"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/73e9f810-8b43-4548-a4b1-830b1b99cdfd.webp" alt="" loading="eager"></a>
+      <a class="card card--4" href="#" aria-label="Golden retriever in a cowboy hat and red bandana"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fde79b9a-ae7c-439f-9a96-f727754defb7.webp" alt="" loading="eager"></a>
+
+      <span class="hl hl-zero in-frame"><span>Starts from Zero!</span></span>
+      <svg class="arrow arrow--zero" viewBox="0 0 80 70" aria-hidden="true"><path d="M6 6 C 10 30, 30 46, 62 40"/><path d="M50 30 L 64 40 L 49 50"/></svg>
+
+      <span class="hl hl-real in-frame"><span>Real Client Results</span></span>
+      <svg class="arrow arrow--up" viewBox="0 0 70 66" aria-hidden="true"><path d="M40 62 C 60 50, 56 26, 22 10"/><path d="M36 8 L 20 9 L 27 24"/></svg>
+      <svg class="arrow arrow--down" viewBox="0 0 70 70" aria-hidden="true"><path d="M10 6 C 30 10, 50 30, 44 60"/><path d="M34 48 L 44 62 L 56 50"/><path d="M22 10 C 44 16, 60 34, 56 60"/><path d="M46 50 L 56 64 L 66 52"/></svg>
+
+      <span class="hl hl-free in-frame"><span>Zero Cost</span></span>
+      <a class="pill cta in-frame" href="#">Begin the Journey</a>
+      <p class="note in-frame">No art skills needed to start.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var menuBtn = document.querySelector('.menu-btn');
+  menuBtn.addEventListener('click', function () {
+    var open = menuBtn.getAttribute('aria-expanded') === 'true';
+    menuBtn.setAttribute('aria-expanded', String(!open));
+  });
+
+  if (reduced || !('animate' in root)) { root.classList.remove('pre'); return; }
+
+  var EXPO = 'cubic-bezier(.16,1,.3,1)', SOFT = 'cubic-bezier(.22,.75,.2,1)';
+  var anims = [];
+  function play(el, frames, opts) { if (!el) return; anims.push(el.animate(frames, Object.assign({ fill: 'both' }, opts))); }
+  function mark(el, t) {
+    play(el, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { delay: t, duration: 520, easing: 'cubic-bezier(.65,0,.35,1)', pseudoElement: '::before' });
+    play(el.querySelector('span'), [{ opacity: 0, transform: 'translateY(8px) scale(1.06)' }, { opacity: 1, transform: 'none' }], { delay: t + 360, duration: 480, easing: EXPO });
+  }
+  function run() {
+    var $ = function (s) { return document.querySelector(s); };
+    [$('.logo'), $('.links'), $('.xbtn'), $('.nav .pill'), $('.menu-btn')].forEach(function (el, i) {
+      play(el, [{ opacity: 0 }, { opacity: 1 }], { delay: 60 + i * 70, duration: 600, easing: SOFT });
+    });
+    mark($('.hl-begin'), 350);
+    play($('.headline'), [{ opacity: 0, filter: 'blur(14px)', transform: 'scale(1.04)' }, { opacity: 1, filter: 'blur(0px)', transform: 'scale(1)' }], { delay: 700, duration: 1000, easing: EXPO });
+    mark($('.hl-cost'), 1450);
+    play($('.subline'), [{ opacity: 0, filter: 'blur(6px)', transform: 'translateY(8px)' }, { opacity: 1, filter: 'blur(0px)', transform: 'none' }], { delay: 1850, duration: 800, easing: SOFT });
+    root.classList.remove('pre');
+    var done = false;
+    function finish() { if (done) return; done = true; anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); root.classList.remove('pre'); }
+    Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); })).then(finish);
+    setTimeout(finish, 4000);
+  }
+  var fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 700); })]).then(function () { requestAnimationFrame(run); });
+})();
+</script>
+</body>
+</html>

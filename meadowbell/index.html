@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meadowbell — Hollyoak's Plucky Sprout Squad</title>
+<meta name="description" content="Learn the ways of the meadow with Hollyoak's Plucky Sprout Squad, an animated farming series packed with play, chores, and wonder.">
+<meta name="theme-color" content="#5d9ad8">
+<link rel="icon" href="data:,">
+<link rel="preload" href="grandstander-900.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="inter-500.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+(function () {
+  try {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('pre');
+      setTimeout(function () { document.documentElement.classList.remove('pre'); }, 4000);
+    }
+  } catch (e) {}
+})();
+</script>
+<style>
+@font-face { font-family: "Grandstander"; font-weight: 900; font-style: normal; font-display: swap; src: url("grandstander-900.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: swap; src: url("inter-400.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-style: normal; font-display: swap; src: url("inter-500.woff2") format("woff2"); }
+
+:root {
+  --u: calc(100vw / 1440);
+  --green: #5b875c;
+  --display: "Grandstander", "Comic Sans MS", system-ui, sans-serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --plate: url("https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3ca5d10d-ea2f-4907-876f-33bde169469e.jpg");
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #5d9ad8; color: #fff; font-family: var(--sans); font-weight: 400; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- 1440x1280 frame ---------- */
+.hero { position: relative; width: 100%; height: calc(1280 * var(--u)); overflow: hidden; }
+.scene { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.plate { position: absolute; inset: 0; background: #5d9ad8 var(--plate) 0 0 / 100% 100% no-repeat; }
+.loop { position: absolute; left: 0; top: -6.25%; width: 100%; height: 112.5%; display: block; object-fit: fill; pointer-events: none; }
+.ui { position: absolute; inset: 0; z-index: 2; }
+.ui > * { position: absolute; }
+
+/* ---------- display type ---------- */
+.disp { font-family: var(--display); font-weight: 900; color: #fff; line-height: 1; white-space: nowrap; }
+
+/* ---------- nav ---------- */
+.logo { left: calc(31 * var(--u)); top: calc(23 * var(--u)); display: inline-flex; align-items: center; gap: calc(8 * var(--u)); font-size: calc(29.5 * var(--u)); letter-spacing: -.01em; }
+.logo svg { width: calc(30 * var(--u)); height: calc(30 * var(--u)); display: block; }
+.navpill {
+  left: calc(443 * var(--u)); top: calc(13 * var(--u)); width: calc(546 * var(--u)); height: calc(50 * var(--u)); border-radius: calc(25 * var(--u));
+  background: rgba(173,196,174,.45); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  display: flex; align-items: center; gap: calc(54 * var(--u)); padding-left: calc(49 * var(--u));
+  font-family: var(--sans); font-weight: 500; font-size: calc(19.5 * var(--u)); color: #fff; white-space: nowrap;
+}
+.navpill a { position: relative; transition: opacity .2s; }
+.navpill a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; border-radius: 2px; background: #fff; transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+.navpill a:hover::after { transform: scaleX(1); }
+.pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: calc(10 * var(--u)); border-radius: 999px; white-space: nowrap; line-height: 1;
+  font-family: var(--sans); font-weight: 500; transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease;
+}
+.pill:hover { transform: translateY(calc(-2 * var(--u))); }
+.pill--white { background: #fff; color: var(--green); box-shadow: 0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(28,70,120,.16); }
+.pill--mint { background: rgba(204,218,173,.6); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #fff; }
+.nav-join { left: calc(1311 * var(--u)); top: calc(14 * var(--u)); width: calc(105 * var(--u)); height: calc(45 * var(--u)); font-size: calc(18.5 * var(--u)); }
+
+/* ---------- copy ---------- */
+.kicker { left: 0; width: 100%; top: calc(196 * var(--u)); text-align: center; font-size: calc(40.5 * var(--u)); letter-spacing: .02em; }
+.headline {
+  left: 0; width: 100%; top: calc(252 * var(--u)); text-align: center;
+  font-size: calc(143.5 * var(--u)); line-height: calc(118 * var(--u)); letter-spacing: -.005em;
+  text-shadow: 0 calc(4 * var(--u)) calc(18 * var(--u)) rgba(28,70,120,.28);
+}
+.headline span { display: block; }
+.subline { left: 0; width: 100%; top: calc(514 * var(--u)); text-align: center; font-size: calc(21.2 * var(--u)); line-height: calc(27 * var(--u)); font-weight: 400; color: #fff; text-shadow: 0 1px calc(10 * var(--u)) rgba(28,70,120,.22); }
+.btn-join { left: calc(550 * var(--u)); top: calc(617 * var(--u)); width: calc(144 * var(--u)); height: calc(59 * var(--u)); font-size: calc(22 * var(--u)); }
+.btn-watch { left: calc(707 * var(--u)); top: calc(619 * var(--u)); width: calc(184 * var(--u)); height: calc(58 * var(--u)); font-size: calc(19.5 * var(--u)); }
+.play { width: calc(16 * var(--u)); height: calc(16 * var(--u)); display: block; flex: none; }
+.play path { fill: #fff; stroke: #fff; stroke-width: 3; stroke-linejoin: round; }
+
+/* ---------- chapters ---------- */
+.ch-title { left: calc(137 * var(--u)); top: calc(866 * var(--u)); font-size: calc(36 * var(--u)); }
+.ch-link { right: calc(132 * var(--u)); top: calc(874 * var(--u)); font-size: calc(22 * var(--u)); font-weight: 500; display: inline-flex; align-items: center; gap: calc(6 * var(--u)); white-space: nowrap; }
+.ch-link i { font-style: normal; display: inline-block; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.ch-link:hover i { transform: translateX(calc(4 * var(--u))); }
+.card {
+  top: calc(913 * var(--u)); width: calc(378 * var(--u)); height: calc(273 * var(--u)); border-radius: calc(15 * var(--u)); overflow: hidden; display: block;
+  box-shadow: 0 calc(12 * var(--u)) calc(30 * var(--u)) rgba(28,70,120,.22), 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(28,70,120,.12);
+  transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s ease; background: #9bc3e6;
+}
+.card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+.card:hover { transform: translateY(calc(-8 * var(--u))); box-shadow: 0 calc(20 * var(--u)) calc(40 * var(--u)) rgba(28,70,120,.28); }
+.card:hover img { transform: scale(1.05); }
+.card .play { position: absolute; left: calc(20 * var(--u)); bottom: calc(20 * var(--u)); width: calc(24 * var(--u)); height: calc(24 * var(--u)); filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+.card--1 { left: calc(133 * var(--u)); } .card--2 { left: calc(531 * var(--u)); } .card--3 { left: calc(929 * var(--u)); }
+.actions, .chapters, .ch-head, .ch-row { display: contents; }
+.btn-join, .btn-watch, .ch-title, .ch-link, .card { position: absolute; }
+.nav-mobile { display: none; }
+
+/* ---------- pre-paint entrance state ---------- */
+html.pre .logo, html.pre .navpill, html.pre .nav-join, html.pre .kicker, html.pre .headline span, html.pre .subline,
+html.pre .btn-join, html.pre .btn-watch, html.pre .ch-title, html.pre .ch-link, html.pre .card { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .loop { display: none; }
+  *, *::before, *::after { transition: none !important; }
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 820px) {
+  :root { --u: calc(100vw / 820); }
+  .hero { height: auto; min-height: 100vh; min-height: 100dvh; }
+  .scene { position: absolute; inset: 0 auto 0 18%; width: auto; height: 100%; aspect-ratio: 9 / 8; transform: translateX(-18%); }
+  .ui { position: relative; inset: auto; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 14px 18px 32px; min-height: 100vh; min-height: 100dvh; }
+  .ui > *, .btn-join, .btn-watch, .ch-title, .ch-link { position: static; }
+  .nav-mobile { display: flex; width: 100%; align-items: center; justify-content: space-between; }
+  .nav-mobile .logo { font-size: 24px; gap: 6px; }
+  .nav-mobile .logo svg { width: 24px; height: 24px; }
+  .nav-mobile .pill { width: auto; height: 40px; padding: 0 16px; font-size: 15px; }
+  .logo.desk, .navpill, .nav-join { display: none; }
+  .kicker { width: auto; margin-top: clamp(36px, 10vh, 90px); font-size: clamp(20px, 5.6vw, 28px); }
+  .headline { width: auto; margin-top: 6px; font-size: 51px; line-height: .86; white-space: normal; }
+  .subline { width: auto; margin-top: 18px; font-size: 16px; line-height: 1.4; max-width: 30em; }
+  .subline br { display: none; }
+  .actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; justify-content: center; }
+  .btn-join { width: 124px; height: 50px; font-size: 18px; }
+  .btn-watch { width: auto; height: 50px; padding: 0 18px; font-size: 16px; }
+  .play { width: 14px; height: 14px; }
+  .chapters { display: block; width: 100%; margin-top: auto; padding-top: clamp(28px, 6vh, 60px); text-align: left; }
+  .ch-head { display: flex; align-items: baseline; justify-content: space-between; padding: 0 2px 12px; }
+  .ch-title { font-size: 26px; }
+  .ch-link { font-size: 15px; }
+  .ch-row { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 14px; margin: 0 -18px; padding-left: 18px; padding-right: 18px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .ch-row::-webkit-scrollbar { display: none; }
+  .card { position: relative; top: auto; left: auto; flex: 0 0 min(78vw, 300px); height: auto; aspect-ratio: 378 / 273; scroll-snap-align: start; border-radius: 12px; }
+  .card .play { left: 14px; bottom: 14px; width: 20px; height: 20px; }
+}
+</style>
+</head>
+<body>
+<main class="hero" id="top">
+  <div class="scene" aria-hidden="true">
+    <div class="plate" role="img" aria-label="A boy and his beagle lie on a grassy hillside under a big blue sky full of cumulus clouds"></div>
+    <video class="loop" autoplay muted loop playsinline preload="auto"
+           poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3ca5d10d-ea2f-4907-876f-33bde169469e.jpg"
+           src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/d2cb5bef-f92b-4e91-ae93-8dc6555e56ac.mp4"></video>
+  </div>
+
+  <div class="ui">
+    <div class="nav-mobile" aria-hidden="true">
+      <a class="logo disp" href="#top"><svg viewBox="0 0 30 30" aria-hidden="true"><path fill="#fff" d="M15 28c-.3-6-.3-10 0-14 .4-5 3-9 9-11-1 6-3.5 9-9 11-5.5-2-8-5-9-11 6 2 8.6 6 9 11"/></svg>Meadowbell</a>
+      <a class="pill pill--white" href="#">Join us</a>
+    </div>
+
+    <a class="logo disp desk" href="#top" aria-label="Meadowbell home">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><path fill="#fff" d="M15 28c-.3-6-.3-10 0-14 .4-5 3-9 9-11-1 6-3.5 9-9 11-5.5-2-8-5-9-11 6 2 8.6 6 9 11"/></svg>Meadowbell
+    </a>
+    <nav class="navpill" aria-label="Primary">
+      <a href="#">Farm</a><a href="#">Gear</a><a href="#chapters">Chapters</a><a href="#">Our Crew</a>
+    </nav>
+    <a class="pill pill--white nav-join" href="#">Join us</a>
+
+    <p class="kicker disp">HOLLYOAK'S</p>
+    <h1 class="headline disp"><span>PLUCKY</span><span>SPROUT SQUAD</span></h1>
+    <p class="subline">Learn the Ways of the Meadow with <br>Hollyoak's Plucky Sprout Squad! Each chapter is <br>packed with play, chores, and wonder.</p>
+    <div class="actions">
+      <a class="pill pill--white btn-join" href="#">Join us</a>
+      <a class="pill pill--mint btn-watch" href="#"><svg class="play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg>Watch preview</a>
+    </div>
+
+    <section class="chapters" id="chapters" aria-label="Chapters">
+      <div class="ch-head">
+        <h2 class="ch-title disp">CHAPTERS</h2>
+        <a class="ch-link" href="#">browse all chapters <i>›</i></a>
+      </div>
+      <div class="ch-row">
+        <a class="card card--1" href="#" aria-label="Chapter: the vegetable garden"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/cd2d844f-ae3f-4fa9-8067-b077530b6e71.webp" alt="" loading="eager"><svg class="play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg></a>
+        <a class="card card--2" href="#" aria-label="Chapter: the hill path above the sea"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/48f5b97e-c27c-4afd-9427-eb35aebd1751.webp" alt="" loading="eager"><svg class="play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg></a>
+        <a class="card card--3" href="#" aria-label="Chapter: flying a kite"><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/cde5384e-ce4d-423f-925a-451b779066e0.webp" alt="" loading="eager"><svg class="play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || !('animate' in root)) { root.classList.remove('pre'); return; }
+  var EXPO = 'cubic-bezier(.16,1,.3,1)', SOFT = 'cubic-bezier(.22,.75,.2,1)', SPRING = 'cubic-bezier(.34,1.56,.64,1)';
+  var anims = [];
+  function play(el, frames, opts) { if (!el) return; anims.push(el.animate(frames, Object.assign({ fill: 'both' }, opts))); }
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var drop = [{ opacity: 0, transform: 'translateY(-14px)' }, { opacity: 1, transform: 'none' }];
+  var rise = function (dy) { return [{ opacity: 0, transform: 'translateY(' + dy + 'px)' }, { opacity: 1, transform: 'none' }]; };
+
+  function run() {
+    var mobile = matchMedia('(max-width: 820px)').matches;
+    var navEls = mobile ? [$('.nav-mobile .logo'), $('.nav-mobile .pill')] : [$('.logo.desk'), $('.navpill'), $('.nav-join')];
+    navEls.forEach(function (el, i) { play(el, drop, { delay: 60 + i * 80, duration: 650, easing: SOFT }); });
+    play($('.kicker'), [{ opacity: 0, filter: 'blur(10px)' }, { opacity: 1, filter: 'blur(0px)' }], { delay: 240, duration: 700, easing: SOFT });
+    $$('.headline span').forEach(function (el, i) {
+      play(el, [{ opacity: 0, filter: 'blur(12px)', transform: 'translateY(40px) scale(.96)' }, { opacity: 1, filter: 'blur(0px)', transform: 'none' }], { delay: 380 + i * 160, duration: 900, easing: SPRING });
+    });
+    var rest = [$('.subline'), $('.btn-join'), $('.btn-watch'), $('.ch-title'), $('.ch-link')].concat($$('.card'));
+    rest.forEach(function (el, i) { play(el, rise(18), { delay: 820 + i * 90, duration: 700, easing: EXPO }); });
+    root.classList.remove('pre');
+    var done = false;
+    function finish() { if (done) return; done = true; anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); root.classList.remove('pre'); }
+    Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); })).then(finish);
+    setTimeout(finish, 4000);
+  }
+  var fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 700); })]).then(function () { requestAnimationFrame(run); });
+})();
+</script>
+</body>
+</html>
