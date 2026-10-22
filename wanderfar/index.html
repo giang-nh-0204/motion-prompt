@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wander far. Rest easy.</title>
+<meta name="description" content="Find quiet fjords, cozy cabins, and the slow, wild mornings you came for, all here in one place.">
+<meta name="theme-color" content="#FEFEFE">
+<link rel="icon" href="data:,">
+<link rel="preload" href="inter.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "Inter"; font-weight: 100 900; font-style: normal; font-display: swap; src: url("inter.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: swap; src: url("jetbrains-mono.woff2") format("woff2"); }
+
+:root {
+  --u: min(100vw / 1446, max(100vh / 1088, .78px));
+  --bg: #FEFEFE; --ink: #0B0E0C; --text: #222223; --label: #111313; --muted: #6E7070; --lede: #727274; --line: #E6E6E7; --navy: #00286E; --navy2: #0A2A72;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@supports (height: 100dvh) { :root { --u: min(100vw / 1446, max(100dvh / 1088, .78px)); } }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); }
+body { color: var(--text); font-family: var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+/* ---------- one-screen stack ---------- */
+.page { height: 100vh; height: 100dvh; display: flex; flex-direction: column; padding: calc(52 * var(--u)) calc(64 * var(--u)) calc(48 * var(--u)); overflow: hidden; }
+.head { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: calc(40 * var(--u)); }
+h1 { font-family: var(--sans); font-weight: 700; font-variation-settings: "opsz" 32, "wght" 700; font-size: calc(90 * var(--u)); line-height: .98; letter-spacing: -.035em; color: var(--ink); }
+h1 span { display: block; white-space: nowrap; }
+.lede { text-align: right; font-size: calc(16.5 * var(--u)); line-height: 1.5; color: var(--lede); font-weight: 400; padding-bottom: calc(10 * var(--u)); }
+.lede span { display: block; white-space: nowrap; }
+
+.tabs { flex: none; display: flex; gap: calc(34 * var(--u)); margin-top: calc(38 * var(--u)); border-bottom: 1px solid var(--line); }
+.tab { display: inline-flex; align-items: center; gap: calc(8 * var(--u)); padding: 0 calc(2 * var(--u)) calc(14 * var(--u)); font-size: calc(15 * var(--u)); font-weight: 500; color: var(--muted); position: relative; }
+.tab svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tab.active { color: var(--label); font-weight: 600; }
+.tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--navy2); }
+.tab:hover { color: var(--label); }
+
+.search { flex: none; margin-top: calc(22 * var(--u)); display: grid; grid-template-columns: 1.25fr 1fr 1fr auto; border: 1px solid var(--line); border-radius: calc(6 * var(--u)); height: calc(84 * var(--u)); }
+.field { display: flex; flex-direction: column; justify-content: center; gap: calc(6 * var(--u)); padding: 0 calc(24 * var(--u)); border-right: 1px solid var(--line); min-width: 0; }
+.field small { font-size: calc(10.5 * var(--u)); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--label); }
+.field .val { display: flex; align-items: center; gap: calc(9 * var(--u)); font-size: calc(16 * var(--u)); font-weight: 500; color: var(--text); white-space: nowrap; }
+.field .val svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); flex: none; fill: none; stroke: var(--navy2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.go { display: inline-flex; align-items: center; justify-content: center; gap: calc(10 * var(--u)); padding: 0 calc(34 * var(--u)); margin: calc(8 * var(--u)); border-radius: calc(5 * var(--u)); background: var(--navy); color: #fff; font-size: calc(15.5 * var(--u)); font-weight: 600; white-space: nowrap; transition: background .25s ease, transform .25s ease; }
+.go svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+.go:hover { background: #003a9a; transform: translateY(-1px); }
+
+.panel { position: relative; flex: 1 1 auto; min-height: 0; margin-top: calc(26 * var(--u)); overflow: hidden; background: #1b2a3a; }
+.still, .loop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; display: block; }
+.loop { opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
+.loop.on { opacity: 1; }
+.chip { position: absolute; left: calc(22 * var(--u)); bottom: calc(22 * var(--u)); display: inline-flex; align-items: center; gap: calc(12 * var(--u)); height: calc(38 * var(--u)); padding: 0 calc(16 * var(--u)); border-radius: calc(6 * var(--u)); background: #fff; color: var(--ink); font-size: calc(13.5 * var(--u)); font-weight: 600; box-shadow: 0 calc(6 * var(--u)) calc(20 * var(--u)) rgba(0,20,50,.25); white-space: nowrap; }
+.chip code { font-family: var(--mono); font-size: calc(12 * var(--u)); font-weight: 400; color: var(--muted); }
+
+/* ---------- entrance ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .e { opacity: 0; animation: rise .8s cubic-bezier(.16,1,.3,1) forwards; }
+  .e-up { transform: translateY(18px); }
+  .e-slide { transform: translateX(-20px); }
+  .e-pop { transform: scale(.9); }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  h1 .l1 { animation-delay: .05s; } h1 .l2 { animation-delay: .19s; }
+  .lede.e { animation-delay: .4s; } .tabs.e { animation-delay: .55s; } .search.e { animation-delay: .7s; } .go.e { animation-delay: .95s; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  .panel.e { animation-delay: .6s; }
+}
+@media (prefers-reduced-motion: reduce) { .loop { display: none; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+/* ---------- smaller screens ---------- */
+@media (max-width: 860px) {
+  :root { --u: 1px; }
+  html, body { height: auto; overflow: auto; overflow-x: hidden; }
+  .page { height: auto; min-height: 100vh; min-height: 100dvh; padding: 28px 18px 24px; }
+  .head { flex-direction: column; align-items: flex-start; gap: 14px; }
+  h1 { font-size: clamp(42px, 12vw, 64px); }
+  .lede { text-align: left; font-size: 15px; padding-bottom: 0; }
+  .lede span { display: inline; white-space: normal; }
+  .tabs { gap: 22px; margin-top: 24px; }
+  .tab { font-size: 14px; padding-bottom: 12px; }
+  .search { grid-template-columns: 1fr; height: auto; margin-top: 18px; }
+  .field { padding: 14px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .go { margin: 10px; height: 50px; justify-content: center; }
+  .panel { flex: none; height: max(240px, 46vh); margin-top: 20px; }
+  .still, .loop { object-position: 74% 50%; }
+  .chip { left: 14px; bottom: 14px; height: 34px; font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="head">
+    <h1><span class="l1 e e-up">Wander far.</span><span class="l2 e e-up">Rest easy.</span></h1>
+    <p class="lede e e-up"><span>Find quiet fjords, cozy cabins, and the slow, wild</span> <span>mornings you came for, all here in one place.</span></p>
+  </header>
+
+  <nav class="tabs e e-up" aria-label="Search type">
+    <a class="tab active" href="#" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Stays</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24"><path d="M2 16l20-5-4 2 3 6-3 1-4-5-6 2-1 3-2 1 0-5 4-2-2-6 2-1 4 5z"/></svg>Flights</a>
+    <a class="tab" href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Experiences</a>
+  </nav>
+
+  <form class="search e e-slide" aria-label="Search stays" onsubmit="return false">
+    <div class="field"><small>Where to?</small><span class="val"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>Molde</span></div>
+    <div class="field"><small>Dates</small><span class="val"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Jun 18 – Jun 24</span></div>
+    <div class="field"><small>Travelers</small><span class="val"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.8c2.8.2 4.9 1.9 5.5 5.2"/></svg>3 travelers</span></div>
+    <button class="go e e-pop" type="submit"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>Search</button>
+  </form>
+
+  <section class="panel e" aria-label="Geirangerfjord">
+    <img class="still" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/bd8d16a6-ac46-4cb8-bf0b-fb8e732ed31a.webp" alt="A still fjord at blue hour: steep cliffs with low clouds, snowy peaks, a tall waterfall and a red cabin with lit windows mirrored in glassy water">
+    <video class="loop" id="loop" autoplay muted loop playsinline preload="auto" aria-hidden="true"
+           src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/62b7e754-022b-4512-9b96-513173cb2e14.mp4"></video>
+    <div class="chip">Geirangerfjord, Norge<code>62.10° N</code></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var loop = document.getElementById('loop');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var on = function () { loop.classList.add('on'); loop.play().catch(function () {}); };
+  if (loop.readyState >= 2) on(); else loop.addEventListener('loadeddata', on, { once: true });
+})();
+</script>
+</body>
+</html>

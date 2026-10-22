@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eclipsio — Launch a Personal Brand That Outshines Every Résumé</title>
+<meta name="description" content="Whether you're a designer, developer, or creator, Eclipsio will help you glow brighter with a site that feels polished, and you.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:,">
+<link rel="preload" href="inter.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "Inter"; font-weight: 100 900; font-style: normal; font-display: swap; src: url("inter.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 600; font-style: normal; font-display: swap; src: url("poppins-600.woff2") format("woff2"); }
+
+:root {
+  --u: min(100vw / 1448, 100vh / 1086);
+  --orange: #ee7f20; --sub: #bcbcbe; --peach: #f7c69b;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --plate: url("https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b4b7e033-b082-4f09-8ec4-2fabca30c4b4.webp");
+}
+@supports (height: 100dvh) { :root { --u: min(100vw / 1448, 100dvh / 1086); } }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #000; }
+body { color: #fff; font-family: var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+/* ---------- one-screen stack ---------- */
+.page { position: relative; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+.nav { position: relative; z-index: 5; flex: none; height: calc(124.5 * var(--u)); }
+.nav > * { position: absolute; top: calc(34 * var(--u)); height: calc(37.7 * var(--u)); display: flex; align-items: center; }
+.logo { left: calc(68 * var(--u)); gap: calc(10 * var(--u)); font-size: calc(27.8 * var(--u)); font-weight: 650; letter-spacing: -.02em; }
+.logo svg { width: calc(30 * var(--u)); height: calc(30 * var(--u)); display: block; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.links { left: 50%; transform: translateX(-50%); gap: calc(42.6 * var(--u)); font-size: calc(16.25 * var(--u)); font-weight: 600; white-space: nowrap; }
+.links a { position: relative; opacity: .92; transition: opacity .2s; }
+.links a:hover { opacity: 1; }
+.pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 600; white-space: nowrap; line-height: 1; transition: transform .25s ease, box-shadow .3s ease, border-color .3s ease, filter .3s ease; }
+.pill:hover { transform: translateY(-1px); }
+.nav .pill--white { right: calc(62 * var(--u)); background: #fff; color: #000; padding: 0 calc(22 * var(--u)); font-size: calc(15 * var(--u)); }
+.menu-btn { display: none; }
+.dropdown { display: none; }
+
+.copy { position: relative; z-index: 4; flex: none; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 calc(40 * var(--u)); }
+.badge {
+  position: relative; display: inline-flex; align-items: center; gap: calc(10 * var(--u)); height: calc(43.9 * var(--u)); padding: 0 calc(20 * var(--u)) 0 calc(16 * var(--u)); border-radius: 999px;
+  background: linear-gradient(180deg, rgba(40,22,10,.9), rgba(16,10,6,.92)); color: #d9d9dc; font-size: calc(15.6 * var(--u)); font-weight: 500; white-space: nowrap;
+  box-shadow: inset 0 0 calc(18 * var(--u)) rgba(238,127,32,.22), inset 0 1px 0 rgba(255,255,255,.22), 0 calc(10 * var(--u)) calc(30 * var(--u)) rgba(0,0,0,.6);
+}
+.badge::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: linear-gradient(40deg, #ee7f20 0%, rgba(238,127,32,.55) 35%, rgba(238,127,32,.08) 70%, rgba(255,255,255,.12) 100%); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+.badge i { width: calc(9 * var(--u)); height: calc(9 * var(--u)); border-radius: 50%; background: var(--peach); box-shadow: 0 0 calc(10 * var(--u)) calc(2 * var(--u)) rgba(247,198,155,.6); }
+.headline { margin-top: calc(24 * var(--u)); font-size: calc(78.8 * var(--u)); line-height: calc(81 * var(--u)); font-weight: 750; font-variation-settings: "wght" 750; letter-spacing: -.03em; color: #fff; }
+.headline span { display: block; white-space: nowrap; }
+.subline { margin-top: calc(22 * var(--u)); font-size: calc(22.6 * var(--u)); line-height: calc(36 * var(--u)); letter-spacing: .031em; color: var(--sub); font-weight: 400; }
+.actions { margin-top: calc(32 * var(--u)); display: flex; gap: calc(14 * var(--u)); }
+.actions .pill { height: calc(55.4 * var(--u)); padding: 0 calc(34 * var(--u)); font-size: calc(17 * var(--u)); }
+.btn-fill { background: linear-gradient(180deg, #f28a2a, #ec7a1c); color: #fff; border: 1px solid rgba(255,255,255,.55); }
+.btn-fill:hover { box-shadow: 0 0 calc(28 * var(--u)) rgba(238,127,32,.55), 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(238,127,32,.35); }
+.btn-line { position: relative; background: #000; color: #fff; }
+.btn-line::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(90deg, #8a8a8f, #b4582a); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; transition: filter .3s ease; }
+.btn-line:hover::before { filter: brightness(1.5); }
+.btn-line:hover { box-shadow: 0 0 calc(18 * var(--u)) rgba(255,255,255,.12); }
+
+/* ---------- logo strip ---------- */
+.strip-wrap { position: relative; z-index: 4; flex: none; display: flex; justify-content: center; margin-top: calc(44 * var(--u)); }
+.strip {
+  position: relative; width: calc(892 * var(--u)); height: calc(56 * var(--u)); border-radius: 999px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border: 1px solid rgba(255,190,140,.16);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.track { position: absolute; left: 0; top: 0; height: 100%; display: flex; align-items: center; gap: calc(64 * var(--u)); padding-left: calc(32 * var(--u)); width: max-content; animation: marquee 46s linear infinite; will-change: transform; }
+.strip:hover .track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+.brand { display: inline-flex; align-items: center; gap: calc(10 * var(--u)); color: #8d8d92; font-family: "Poppins", var(--sans); font-weight: 600; font-size: calc(18 * var(--u)); white-space: nowrap; }
+.brand svg { width: calc(34 * var(--u)); height: calc(34 * var(--u)); display: block; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- eclipse zone ---------- */
+.zone { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.plate, .loop { position: absolute; left: 50%; bottom: 0; height: calc(1086 * var(--u)); transform: translateX(-50%); display: block; }
+.plate { width: calc(1448 * var(--u)); background: var(--plate) center / 100% 100% no-repeat; }
+.loop { aspect-ratio: 1930 / 1086; width: auto; object-fit: fill; opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
+.loop.on { opacity: 1; }
+
+/* ---------- entrance ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .e { opacity: 0; animation: rise .85s cubic-bezier(.16,1,.3,1) forwards; }
+  .e-up { transform: translateY(16px); }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .logo.e { animation-delay: .05s; } .links.e { animation-delay: .15s; } .nav .pill.e { animation-delay: .25s; } .menu-btn.e { animation-delay: .25s; }
+  .badge.e { animation-delay: .35s; } .headline .l1 { animation-delay: .5s; } .headline .l2 { animation-delay: .64s; }
+  .subline.e { animation-delay: .85s; } .btn-fill.e { animation-delay: 1.0s; } .btn-line.e { animation-delay: 1.12s; } .strip-wrap.e { animation-delay: 1.3s; }
+}
+@media (prefers-reduced-motion: reduce) { .loop { display: none; } .track { animation: none; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+/* ---------- phones ---------- */
+@media (max-width: 760px) {
+  :root { --u: 1px; }
+  .page { height: 100vh; height: 100dvh; }
+  .nav { height: 72px; }
+  .nav > * { top: 16px; height: 40px; }
+  .logo { left: 18px; font-size: 22px; } .logo svg { width: 24px; height: 24px; }
+  .links { display: none; }
+  .nav .pill--white { right: 66px; padding: 0 16px; font-size: 14px; }
+  .menu-btn { display: grid; place-items: center; right: 18px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.06); }
+  .menu-btn svg { width: 45%; height: 45%; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; }
+  .menu-btn .x { display: none; }
+  .nav.open .menu-btn .bars { display: none; } .nav.open .menu-btn .x { display: block; }
+  .nav { overflow: visible; }
+  .dropdown { display: block; position: absolute; left: 18px; right: 18px; top: 66px; height: auto; z-index: 20; background: rgba(14,10,8,.96); border: 1px solid rgba(255,190,140,.2); border-radius: 16px; padding: 8px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .25s ease, transform .25s ease, visibility 0s .25s; }
+  .nav.open .dropdown { opacity: 1; visibility: visible; transform: none; transition: opacity .25s ease, transform .25s ease, visibility 0s; }
+  .dropdown a { display: block; width: 100%; padding: 12px 14px; border-radius: 10px; font-weight: 600; font-size: 15px; }
+  .dropdown a:hover { background: rgba(255,255,255,.06); }
+  .copy { padding: 8px 18px 0; }
+  .badge { height: 38px; font-size: 13px; padding: 0 16px 0 14px; }
+  .headline { margin-top: 18px; font-size: clamp(32px, 9.4vw, 42px); line-height: 1.08; }
+  .headline span { display: inline; white-space: normal; }
+  .subline { margin-top: 14px; font-size: 15px; line-height: 1.5; letter-spacing: .01em; }
+  .subline br { display: none; }
+  .actions { width: 100%; margin-top: 22px; gap: 10px; }
+  .actions .pill { flex: 1 1 0; height: 50px; padding: 0 10px; font-size: 15px; }
+  .strip-wrap { margin-top: 26px; }
+  .strip { width: 100vw; height: 48px; border-radius: 0; border: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .track { gap: 40px; padding-left: 20px; }
+  .brand { font-size: 15px; } .brand svg { width: 26px; height: 26px; }
+  .plate, .loop { height: auto; width: 140vw; aspect-ratio: 1448 / 1086; }
+  .loop { aspect-ratio: 1930 / 1086; width: calc(140vw * 1930 / 1448); }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="nav" id="nav">
+    <a class="logo e" href="#" aria-label="Eclipsio home"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 7v9a6 6 0 0 0 12 0V7"/><path d="M18 23V14a4 4 0 0 1 8 0v9"/></svg>Eclipsio</a>
+    <nav class="links e" aria-label="Primary"><a href="#">Work</a><a href="#">Showcase</a><a href="#">Members</a><a href="#">Journal</a></nav>
+    <a class="pill pill--white e" href="#">Start Creating</a>
+    <button class="menu-btn e" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="dropdown"><svg class="bars" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <nav class="dropdown" id="dropdown" aria-label="Menu"><a href="#">Work</a><a href="#">Showcase</a><a href="#">Members</a><a href="#">Journal</a></nav>
+  </header>
+
+  <section class="copy">
+    <div class="badge e e-up"><i aria-hidden="true"></i>Shine Your Name Brighter Tonight</div>
+    <h1 class="headline"><span class="l1 e e-up">Launch a Personal Brand That</span> <span class="l2 e e-up">Outshines Every Résumé</span></h1>
+    <p class="subline e e-up">Whether you're a designer, developer, or creator, Eclipsio will help <br>you glow brighter with a site that feels polished, and you.</p>
+    <div class="actions">
+      <a class="pill btn-fill e e-up" href="#">Start Creating</a>
+      <a class="pill btn-line e e-up" href="#">View Samples</a>
+    </div>
+  </section>
+
+  <div class="strip-wrap e e-up">
+    <div class="strip" aria-label="Partners">
+      <div class="track" id="track"></div>
+    </div>
+  </div>
+
+  <div class="zone" aria-hidden="true">
+    <div class="plate" role="img" aria-label="A total solar eclipse rising from the bottom edge: a dark sphere ringed by a blazing amber corona with flares curling off its rim"></div>
+    <video class="loop" id="loop" autoplay muted loop playsinline preload="auto"
+           src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/48106c12-33c9-4cea-9780-4a080477405e.mp4"></video>
+  </div>
+</main>
+
+<script>
+(function () {
+  /* ---------- partner marquee: five fictional logos, duplicated for a seamless loop ---------- */
+  var icons = {
+    Layers: '<path d="M17 5l12 7-12 7-12-7z"/><path d="M5 17l12 7 12-7"/><path d="M5 22l12 7 12-7"/>',
+    Circooles: '<circle cx="17" cy="17" r="11"/><circle cx="17" cy="17" r="5"/>',
+    Quotient: '<circle cx="17" cy="17" r="11"/><path d="M23 23l6 6"/>',
+    Hourglass: '<path d="M9 5h16M9 29h16M11 5c0 7 6 8 6 12s-6 5-6 12M23 5c0 7-6 8-6 12s6 5 6 12"/>',
+    Catalog: '<rect x="6" y="6" width="22" height="22" rx="4"/><path d="M11 12h12M11 17h12M11 22h8"/>'
+  };
+  var names = Object.keys(icons), html = '';
+  for (var r = 0; r < 2; r++) names.forEach(function (n) { html += '<span class="brand"><svg viewBox="0 0 34 34" aria-hidden="true">' + icons[n] + '</svg>' + n + '</span>'; });
+  document.getElementById('track').innerHTML = html;
+
+  /* ---------- video fade-in once playing ---------- */
+  var loop = document.getElementById('loop');
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var on = function () { loop.classList.add('on'); };
+    loop.addEventListener('playing', on, { once: true });
+    if (!loop.paused && loop.readyState >= 3) on();
+    loop.play().catch(function () {});
+  }
+
+  /* ---------- phone menu ---------- */
+  var nav = document.getElementById('nav'), btn = document.getElementById('menuBtn'), dd = document.getElementById('dropdown');
+  function setMenu(open) { nav.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); }
+  btn.addEventListener('click', function () { setMenu(!nav.classList.contains('open')); });
+  dd.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+})();
+</script>
+</body>
+</html>

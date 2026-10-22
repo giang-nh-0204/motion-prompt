@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cutora — Log in</title>
+<meta name="description" content="Log in to Cutora and start creating stunning videos with ease. Edit smarter, export faster, create anywhere.">
+<meta name="theme-color" content="#1a1208">
+<link rel="icon" href="data:,">
+<link rel="preload" href="red-hat-display.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "Red Hat Display"; font-weight: 300 900; font-style: normal; font-display: swap; src: url("red-hat-display.woff2") format("woff2"); }
+
+:root {
+  --u: max(.62px, min(100vw / 1672, 100vh / 941));
+  --ink: #000; --sec: #5F636B; --muted: #898D94; --ph: #95999F; --line: #E2E4E7; --line2: #E9EAEC; --card: #FEFEFE; --btn: #161515; --amber: #F59A08; --amber2: #FBAE05;
+  --sans: "Red Hat Display", "General Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --plate: url("https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/e781b542-a83d-4cf2-a66a-44085485865d.jpg");
+}
+@supports (height: 100dvh) { :root { --u: max(.62px, min(100vw / 1672, 100dvh / 941)); } }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #1a1208; }
+body { color: #fff; font-family: var(--sans); font-weight: 460; font-variation-settings: "wght" 460; overflow: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* ---------- scene ---------- */
+.scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+.plate { position: absolute; inset: 0; background: #1a1208 var(--plate) center / cover no-repeat; }
+.loop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
+.loop.on { opacity: 1; }
+.shade { position: absolute; inset: 0; pointer-events: none; background:
+  linear-gradient(90deg, rgba(0,0,0,.45) 0, rgba(0,0,0,0) calc(150 * var(--u))),
+  linear-gradient(180deg, rgba(0,0,0,.4) 0, rgba(0,0,0,0) calc(140 * var(--u))),
+  linear-gradient(0deg, rgba(20,10,0,.38) 0, rgba(20,10,0,0) calc(420 * var(--u))); }
+
+/* ---------- layout ---------- */
+.page { position: relative; z-index: 1; height: 100vh; height: 100dvh; display: flex; }
+.hero { flex: 1 1 auto; min-width: 0; position: relative; }
+.bar { position: absolute; left: calc(92.5 * var(--u)); right: calc(40 * var(--u)); top: calc(57 * var(--u)); display: flex; align-items: center; justify-content: space-between; }
+.logo { display: inline-flex; align-items: center; gap: calc(14 * var(--u)); font-weight: 680; font-variation-settings: "wght" 680; font-size: calc(35.5 * var(--u)); letter-spacing: calc(-.95 * var(--u)); }
+.logo i { width: calc(48 * var(--u)); height: calc(48 * var(--u)); border-radius: calc(12 * var(--u)); background: #000; display: grid; place-items: center; }
+.logo svg { width: 62%; height: 62%; }
+.back { font-weight: 520; font-variation-settings: "wght" 520; font-size: calc(17.4 * var(--u)); color: var(--amber2); display: inline-flex; align-items: center; gap: calc(8 * var(--u)); }
+.pitch { position: absolute; left: calc(92.5 * var(--u)); bottom: calc(70 * var(--u)); right: calc(40 * var(--u)); }
+h1 { font-weight: 600; font-variation-settings: "wght" 600; font-size: calc(62 * var(--u)); line-height: calc(70 * var(--u)); letter-spacing: calc(-2.6 * var(--u)); color: #fff; }
+h1 .ln { display: block; overflow: hidden; white-space: nowrap; }
+h1 .ln span { display: block; }
+.sub { margin-top: calc(19 * var(--u)); font-weight: 460; font-size: calc(20 * var(--u)); line-height: calc(27.5 * var(--u)); color: rgba(255,255,255,.92); }
+.sub span { display: block; white-space: nowrap; }
+.dots { margin-top: calc(35.5 * var(--u)); display: flex; align-items: center; gap: calc(9 * var(--u)); }
+.dots button { width: calc(9 * var(--u)); height: calc(9 * var(--u)); border-radius: 999px; background: rgba(255,255,255,.55); transition: width .3s ease, background .3s ease; }
+.dots button.on { width: calc(34.5 * var(--u)); background: var(--amber); }
+
+.panel { flex: none; width: calc(742.4 * var(--u)); margin: calc(18 * var(--u)) calc(18 * var(--u)) calc(22.5 * var(--u)) 0; background: var(--card); border-radius: calc(20 * var(--u)); color: var(--ink); display: flex; align-items: center; }
+.form { width: calc(559 * var(--u)); margin-left: calc(96.2 * var(--u)); }
+h2 { font-weight: 660; font-variation-settings: "wght" 660; font-size: calc(50.6 * var(--u)); letter-spacing: calc(-1.9 * var(--u)); line-height: 1.1; }
+.lead { margin-top: calc(8 * var(--u)); font-size: calc(19 * var(--u)); color: var(--sec); }
+.field { margin-top: calc(26 * var(--u)); }
+.field label { display: block; font-weight: 560; font-variation-settings: "wght" 560; font-size: calc(17.4 * var(--u)); margin-bottom: calc(9 * var(--u)); }
+.ctl { position: relative; }
+.ctl input { width: 100%; height: calc(66 * var(--u)); border: 1px solid var(--line); border-radius: calc(10 * var(--u)); padding: 0 calc(56 * var(--u)) 0 calc(20 * var(--u)); font-size: calc(17.4 * var(--u)); background: #fff; outline: none; transition: border-color .2s; }
+.ctl input::placeholder { color: var(--ph); }
+.ctl input:focus { border-color: var(--amber); }
+.eye { position: absolute; right: calc(16 * var(--u)); top: 50%; transform: translateY(-50%); width: calc(32 * var(--u)); height: calc(32 * var(--u)); display: grid; place-items: center; color: var(--muted); }
+.eye svg { width: 70%; height: 70%; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.eye .slash { display: none; }
+.eye.on .slash { display: block; }
+.row { margin-top: calc(22 * var(--u)); display: flex; align-items: center; justify-content: space-between; font-size: calc(17 * var(--u)); }
+.check { display: inline-flex; align-items: center; gap: calc(12 * var(--u)); cursor: pointer; font-weight: 500; }
+.check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.check i { width: calc(26 * var(--u)); height: calc(26 * var(--u)); border-radius: calc(7 * var(--u)); border: 1px solid var(--line); background: #fff; display: grid; place-items: center; transition: background .2s, border-color .2s; }
+.check i svg { width: 60%; height: 60%; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.check input:checked + i { background: #000; border-color: #000; }
+.check input:checked + i svg { opacity: 1; }
+.forgot { color: var(--amber); font-weight: 560; font-variation-settings: "wght" 560; }
+.login { margin-top: calc(38 * var(--u)); width: 100%; height: calc(66 * var(--u)); border-radius: 999px; background: var(--btn); color: var(--amber); font-weight: 640; font-variation-settings: "wght" 640; font-size: calc(18.5 * var(--u)); transition: background .25s ease, box-shadow .25s ease; }
+.login:hover { background: #000; box-shadow: 0 calc(12 * var(--u)) calc(30 * var(--u)) rgba(0,0,0,.28); }
+.or { margin-top: calc(28 * var(--u)); display: flex; align-items: center; gap: calc(16 * var(--u)); font-size: calc(16 * var(--u)); color: var(--muted); }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line2); }
+.google { margin-top: calc(26 * var(--u)); width: 100%; height: calc(66 * var(--u)); border-radius: 999px; background: #fff; border: 1px solid var(--line); display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--u)); font-weight: 560; font-variation-settings: "wght" 560; font-size: calc(17.4 * var(--u)); transition: background .2s; }
+.google:hover { background: #f7f7f8; }
+.google svg { width: calc(22 * var(--u)); height: calc(22 * var(--u)); }
+.foot { margin-top: calc(30 * var(--u)); text-align: center; font-size: calc(17 * var(--u)); color: var(--sec); }
+.foot a { color: var(--amber); font-weight: 620; font-variation-settings: "wght" 620; }
+
+/* ---------- entrance ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .e { animation: rise .8s cubic-bezier(.16,1,.3,1) backwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  .panel.e { animation-name: settle; animation-duration: 1s; }
+  @keyframes settle { from { opacity: 0; transform: translateY(18px) scale(.99); } }
+  h1 .ln span { animation: wipe .9s cubic-bezier(.16,1,.3,1) backwards; }
+  @keyframes wipe { from { transform: translateY(110%); } }
+  .logo.e { animation-delay: .05s; } .back.e { animation-delay: .15s; } .panel.e { animation-delay: .1s; }
+  h1 .ln:nth-child(1) span { animation-delay: .3s; } h1 .ln:nth-child(2) span { animation-delay: .42s; }
+  .sub.e { animation-delay: .62s; } .dots.e { animation-delay: .75s; }
+  h2.e { animation-delay: .45s; } .lead.e { animation-delay: .55s; } .f1.e { animation-delay: .65s; } .f2.e { animation-delay: .75s; } .row.e { animation-delay: .85s; } .login.e { animation-delay: .95s; } .or.e { animation-delay: 1.05s; } .google.e { animation-delay: 1.15s; } .foot.e { animation-delay: 1.25s; }
+}
+@media (prefers-reduced-motion: reduce) { .loop { display: none; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+/* ---------- portrait: tablet + phone, one screen ---------- */
+@media (orientation: portrait) {
+  :root { --u: min(100vw / 390, 100vh / 844); }
+  @supports (height: 100dvh) { :root { --u: min(100vw / 390, 100dvh / 844); } }
+  .page { flex-direction: column; }
+  .hero { flex: 1 1 auto; min-height: 0; }
+  .bar { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(20 * var(--u)); }
+  .logo { font-size: calc(24 * var(--u)); gap: calc(10 * var(--u)); } .logo i { width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: calc(9 * var(--u)); }
+  .back { font-size: calc(13.5 * var(--u)); }
+  .pitch { left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(22 * var(--u)); }
+  h1 { font-size: calc(30 * var(--u)); line-height: calc(35 * var(--u)); letter-spacing: calc(-1.1 * var(--u)); }
+  .sub { font-size: calc(14 * var(--u)); line-height: calc(19 * var(--u)); margin-top: calc(10 * var(--u)); }
+  .sub span { display: inline; white-space: normal; }
+  .dots { margin-top: calc(14 * var(--u)); }
+  .panel { flex: none; width: auto; margin: calc(10 * var(--u)) calc(10 * var(--u)) calc(10 * var(--u)); border-radius: calc(16 * var(--u)); padding: calc(22 * var(--u)) 0; }
+  .form { width: auto; flex: 1; margin: 0 calc(22 * var(--u)); }
+  h2 { font-size: calc(26 * var(--u)); letter-spacing: calc(-.8 * var(--u)); }
+  .lead { font-size: calc(13.5 * var(--u)); margin-top: calc(4 * var(--u)); }
+  .field { margin-top: calc(14 * var(--u)); } .field label { font-size: calc(13.5 * var(--u)); margin-bottom: calc(6 * var(--u)); }
+  .ctl input { height: calc(46 * var(--u)); font-size: calc(14 * var(--u)); border-radius: calc(9 * var(--u)); padding: 0 calc(44 * var(--u)) 0 calc(14 * var(--u)); }
+  .eye { width: calc(28 * var(--u)); height: calc(28 * var(--u)); right: calc(10 * var(--u)); }
+  .row { margin-top: calc(12 * var(--u)); font-size: calc(13 * var(--u)); } .check i { width: calc(20 * var(--u)); height: calc(20 * var(--u)); }
+  .login { margin-top: calc(18 * var(--u)); height: calc(48 * var(--u)); font-size: calc(15 * var(--u)); }
+  .or { margin-top: calc(14 * var(--u)); font-size: calc(12.5 * var(--u)); }
+  .google { margin-top: calc(12 * var(--u)); height: calc(46 * var(--u)); font-size: calc(14 * var(--u)); } .google svg { width: calc(18 * var(--u)); height: calc(18 * var(--u)); }
+  .foot { margin-top: calc(14 * var(--u)); font-size: calc(13 * var(--u)); }
+}
+@media (orientation: portrait) and (max-height: 700px) { .sub { display: none; } }
+/* ---------- landscape phone ---------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root { --u: min(100vw / 700, 100vh / 390); }
+  @supports (height: 100dvh) { :root { --u: min(100vw / 700, 100dvh / 390); } }
+  .bar { left: calc(20 * var(--u)); right: calc(16 * var(--u)); top: calc(16 * var(--u)); }
+  .logo { font-size: calc(20 * var(--u)); gap: calc(8 * var(--u)); } .logo i { width: calc(30 * var(--u)); height: calc(30 * var(--u)); border-radius: calc(8 * var(--u)); }
+  .back { font-size: calc(11 * var(--u)); }
+  .pitch { left: calc(20 * var(--u)); right: calc(16 * var(--u)); bottom: calc(18 * var(--u)); }
+  h1 { font-size: calc(22 * var(--u)); line-height: calc(26 * var(--u)); letter-spacing: calc(-.8 * var(--u)); }
+  .sub { display: none; } .dots { margin-top: calc(10 * var(--u)); }
+  .panel { width: calc(340 * var(--u)); margin: calc(8 * var(--u)) calc(8 * var(--u)) calc(8 * var(--u)) 0; border-radius: calc(12 * var(--u)); }
+  .form { width: auto; flex: 1; margin: 0 calc(18 * var(--u)); }
+  h2 { font-size: calc(20 * var(--u)); letter-spacing: calc(-.6 * var(--u)); } .lead { display: none; }
+  .field { margin-top: calc(8 * var(--u)); } .field label { font-size: calc(10.5 * var(--u)); margin-bottom: calc(3 * var(--u)); }
+  .ctl input { height: calc(32 * var(--u)); font-size: calc(11 * var(--u)); border-radius: calc(7 * var(--u)); padding: 0 calc(34 * var(--u)) 0 calc(10 * var(--u)); }
+  .eye { width: calc(22 * var(--u)); height: calc(22 * var(--u)); right: calc(8 * var(--u)); }
+  .row { margin-top: calc(8 * var(--u)); font-size: calc(10.5 * var(--u)); } .check i { width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
+  .login { margin-top: calc(10 * var(--u)); height: calc(34 * var(--u)); font-size: calc(12 * var(--u)); }
+  .or { margin-top: calc(8 * var(--u)); font-size: calc(10 * var(--u)); }
+  .google { margin-top: calc(6 * var(--u)); height: calc(32 * var(--u)); font-size: calc(11 * var(--u)); } .google svg { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
+  .foot { margin-top: calc(8 * var(--u)); font-size: calc(10.5 * var(--u)); }
+}
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true">
+  <div class="plate" role="img" aria-label="Looking straight up between golden glass skyscrapers at sunset, with a deep blue sky and bright clouds"></div>
+  <video class="loop" id="loop" autoplay muted loop playsinline preload="auto"
+         src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/197f7e27-faac-4bdc-916c-615ac962bf86.mp4"></video>
+  <div class="shade"></div>
+</div>
+
+<main class="page">
+  <section class="hero" aria-label="Cutora">
+    <div class="bar">
+      <a class="logo e" href="#"><i aria-hidden="true"><svg viewBox="0 0 24 24"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC233"/><stop offset="1" stop-color="#F58A07"/></linearGradient></defs><path d="M18.5 7.5A7.5 7.5 0 1 0 18.5 16.5" fill="none" stroke="url(#cg)" stroke-width="4.4" stroke-linecap="round"/></svg></i>Cutora</a>
+      <a class="back e" href="#">← Back to Website</a>
+    </div>
+    <div class="pitch">
+      <h1><span class="ln"><span>Edit Smarter. Export Faster.</span></span><span class="ln"><span>Create Anywhere.</span></span></h1>
+      <p class="sub e"><span>From quick social media clips to full-length videos, our powerful editor </span><span>lets you work seamlessly across devices.</span></p>
+      <div class="dots e" role="tablist" aria-label="Slides"><button class="on" type="button" aria-label="Slide 1" aria-selected="true"></button><button type="button" aria-label="Slide 2"></button><button type="button" aria-label="Slide 3"></button></div>
+    </div>
+  </section>
+
+  <section class="panel e" aria-label="Log in">
+    <form class="form" id="form" novalidate>
+      <h2 class="e">Welcome Back!</h2>
+      <p class="lead e">Log in to start creating stunning videos with ease.</p>
+      <div class="field f1 e"><label for="email">Email</label><div class="ctl"><input id="email" type="email" autocomplete="email" placeholder="Input your email"></div></div>
+      <div class="field f2 e"><label for="pass">Password</label><div class="ctl"><input id="pass" type="password" autocomplete="current-password" placeholder="Input your password"><button class="eye" id="eye" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg></button></div></div>
+      <div class="row e"><label class="check"><input type="checkbox" name="remember"><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></i>Remember Me</label><a class="forgot" href="#">Forgot Password?</a></div>
+      <button class="login e" type="submit">Login</button>
+      <div class="or e">Or continue with:</div>
+      <button class="google e" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4c-.2 1.2-.9 2.3-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4z" fill="#4285F4"/><path d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6C4.8 19.8 8.1 22 12 22z" fill="#34A853"/><path d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1C2.4 8.8 2 10.4 2 12s.4 3.2 1.1 4.6L6.4 14z" fill="#FBBC05"/><path d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8C17 3 14.7 2 12 2 8.1 2 4.8 4.2 3.1 7.4L6.4 10c.8-2.3 3-4.1 5.6-4.1z" fill="#EA4335"/></svg>Continue with Google</button>
+      <p class="foot e">Don’t have an account? <a href="#">Sign up here</a></p>
+    </form>
+  </section>
+</main>
+
+<script>
+(function () {
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var loop = document.getElementById('loop');
+  if (!reduced) { var on = function () { loop.classList.add('on'); loop.play().catch(function () {}); }; if (loop.readyState >= 2) on(); else loop.addEventListener('loadeddata', on, { once: true }); }
+
+  var eye = document.getElementById('eye'), pass = document.getElementById('pass');
+  eye.addEventListener('click', function () { var show = pass.type === 'password'; pass.type = show ? 'text' : 'password'; eye.classList.toggle('on', show); eye.setAttribute('aria-pressed', String(show)); eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.dots button'), function (b, i, all) {
+    b.addEventListener('click', function () { Array.prototype.forEach.call(all, function (o) { o.classList.remove('on'); o.removeAttribute('aria-selected'); }); b.classList.add('on'); b.setAttribute('aria-selected', 'true'); });
+  });
+  document.getElementById('form').addEventListener('submit', function (e) { e.preventDefault(); });
+})();
+</script>
+</body>
+</html>

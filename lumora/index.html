@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lumora — Cadet Skyranger</title>
+<meta name="description" content="Cadet Skyranger: an interactive 3D character hero by Lumora. Past the stars and further.">
+<meta name="theme-color" content="#02040D">
+<link rel="icon" href="data:,">
+<link rel="preload" href="archivo-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="urbanist.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+(function () { try { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { document.documentElement.classList.add('pre'); setTimeout(function () { document.documentElement.classList.remove('pre'); }, 4000); } } catch (e) {} })();
+</script>
+<style>
+@font-face { font-family: "Archivo"; font-style: italic; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url("archivo-italic.woff2") format("woff2"); }
+@font-face { font-family: "Urbanist"; font-weight: 100 900; font-style: normal; font-display: swap; src: url("urbanist.woff2") format("woff2"); }
+
+:root {
+  --u: max(100vw / 1440, 100vh / 810);
+  --muted: #CDD2E6; --page: #02040D;
+  --sans: "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --disp: "Archivo", Impact, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--page); }
+body { color: #fff; font-family: var(--sans); font-weight: 600; overflow: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- stage + frame ---------- */
+.stage { position: fixed; inset: 0; overflow: hidden; }
+@media (pointer: fine) { .stage, .stage * { cursor: none; } }
+.frame { position: absolute; left: calc(50% - 720 * var(--u)); top: calc(50% - 405 * var(--u)); width: calc(1440 * var(--u)); height: calc(810 * var(--u)); }
+.frame > * { position: absolute; }
+.plate { inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+.head {
+  left: calc(510 * var(--u)); top: calc(255 * var(--u)); width: calc(435 * var(--u)); height: calc(450 * var(--u)); object-fit: fill; display: block;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 46%, #000 72%, transparent 99%); mask-image: radial-gradient(ellipse 50% 50% at 50% 46%, #000 72%, transparent 99%);
+  opacity: 0; transition: opacity .6s ease; pointer-events: none;
+}
+.head.on { opacity: 1; }
+.helmet {
+  left: calc(533 * var(--u)); top: calc(288 * var(--u)); width: calc(360 * var(--u)); height: calc(360 * var(--u)); object-fit: cover; display: block;
+  mix-blend-mode: screen; pointer-events: none; opacity: 0; visibility: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 76%, transparent 92%); mask-image: linear-gradient(180deg, #000 76%, transparent 92%);
+}
+.helmet.show { visibility: visible; }
+
+/* ---------- header ---------- */
+.logo { left: calc(55 * var(--u)); top: calc(54 * var(--u)); display: inline-flex; align-items: center; gap: calc(12 * var(--u)); font-size: calc(29.5 * var(--u)); font-weight: 600; letter-spacing: -.01em; }
+.logo i { width: calc(35 * var(--u)); height: calc(35 * var(--u)); border-radius: 50%; background: conic-gradient(from 200deg, #4ff0ff, #2d6bff, #7b3cff, #ff4fb8, #4ff0ff); box-shadow: 0 0 calc(18 * var(--u)) rgba(80,120,255,.45); }
+.menu { left: calc(1358 * var(--u)); top: calc(55 * var(--u)); width: calc(25 * var(--u)); display: grid; gap: calc(6 * var(--u)); }
+.menu i { display: block; height: calc(2.5 * var(--u)); background: #fff; border-radius: 2px; }
+
+/* ---------- copy ---------- */
+.copy { left: 0; width: 100%; top: calc(122 * var(--u)); text-align: center; pointer-events: none; }
+.eyebrow { font-weight: 700; font-size: calc(18 * var(--u)); letter-spacing: .46em; color: var(--muted); text-transform: uppercase; text-indent: .46em; }
+.headline {
+  margin-top: calc(14 * var(--u)); font-family: var(--disp); font-style: italic; font-weight: 900; font-stretch: 94%; font-variation-settings: "wdth" 94, "wght" 900;
+  font-size: calc(100 * var(--u)); line-height: 1; letter-spacing: -.02em; color: #fff; text-transform: uppercase; white-space: nowrap;
+  text-shadow: 0 0 calc(14 * var(--u)) rgba(255,255,255,.95), 0 0 calc(34 * var(--u)) rgba(150,190,255,.8), 0 0 calc(70 * var(--u)) rgba(60,110,255,.75);
+}
+.subtitle { margin-top: calc(9 * var(--u)); font-weight: 600; font-size: calc(23 * var(--u)); color: var(--muted); }
+.cap { font-weight: 700; font-size: calc(12.2 * var(--u)); letter-spacing: .04em; color: #fff; top: calc(745 * var(--u)); }
+.cap--l { left: calc(55 * var(--u)); } .cap--r { right: calc(55 * var(--u)); }
+
+/* ---------- push me ---------- */
+.push {
+  left: calc(675 * var(--u)); top: calc(720 * var(--u)); width: calc(75 * var(--u)); height: calc(75 * var(--u)); border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, #ff7a6a 0%, #e8322a 42%, #a8140f 100%);
+  box-shadow: inset 0 0 0 calc(4 * var(--u)) rgba(40,8,8,.85), 0 0 0 calc(5.5 * var(--u)) rgba(255,255,255,.14), inset 0 calc(-6 * var(--u)) calc(10 * var(--u)) rgba(0,0,0,.35);
+  color: #fff; font-weight: 700; font-size: calc(16.5 * var(--u)); line-height: 1.05; letter-spacing: .04em; text-align: center;
+  display: grid; place-items: center; transition: box-shadow .3s ease;
+}
+.push.on { box-shadow: inset 0 0 0 calc(4 * var(--u)) rgba(40,8,8,.85), 0 0 0 calc(5.5 * var(--u)) rgba(255,255,255,.14), 0 0 calc(30 * var(--u)) calc(6 * var(--u)) rgba(255,60,40,.7); }
+.push span { display: block; }
+
+/* ---------- cursor ---------- */
+.cur { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 50; display: none; }
+@media (pointer: fine) { .cur { display: block; } }
+.cur .dot { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); }
+.cur .ring { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #fff; transform: translate(-50%, -50%); }
+
+/* ---------- pre-paint ---------- */
+html.pre .logo, html.pre .menu, html.pre .eyebrow, html.pre .headline, html.pre .subtitle, html.pre .cap, html.pre .push { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .head { display: none; } *, *::before, *::after { transition: none !important; } }
+
+/* ---------- phones ---------- */
+@media (max-width: 820px) {
+  .logo, .menu, .cap { position: fixed; }
+  .logo { left: 18px; top: 18px; font-size: 22px; gap: 9px; } .logo i { width: 28px; height: 28px; }
+  .menu { left: auto; right: 18px; top: 22px; width: 24px; gap: 5px; } .menu i { height: 2.5px; }
+  .copy { position: fixed; left: 0; width: 100%; top: 70px; padding: 0 16px; }
+  .eyebrow { font-size: 14px; }
+  .headline { font-size: clamp(40px, 13.5vw, 64px); margin-top: 8px; }
+  .subtitle { font-size: 16px; margin-top: 6px; }
+  .cap { top: auto; bottom: 16px; font-size: 11px; } .cap--l { left: 18px; } .cap--r { right: 18px; }
+}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <div class="frame">
+    <img class="plate" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/a194141a-44ba-44bb-8372-e6720af994ca.jpg" alt="A cartoon boy cadet in a white, orange and teal space suit in front of a glowing orange planet horizon in deep navy space">
+    <video class="head" id="head" muted playsinline preload="auto" aria-hidden="true"></video>
+    <img class="helmet" id="helmet" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/e8c78660-4497-41b9-82ae-a4738a5edd11.jpg" alt="" aria-hidden="true">
+
+    <a class="logo" href="#"><i aria-hidden="true"></i>Lumora</a>
+    <button class="menu" type="button" aria-label="Menu"><i></i><i></i><i></i></button>
+
+    <div class="copy">
+      <p class="eyebrow">Cadet</p>
+      <h1 class="headline">Skyranger</h1>
+      <p class="subtitle">Past the Stars and Further</p>
+    </div>
+
+    <span class="cap cap--l">3D Interaction</span>
+    <span class="cap cap--r">@studio.design</span>
+
+    <button class="push" id="push" type="button" aria-pressed="false" aria-label="Push me: toggle the helmet"><span>PUSH</span><span>ME</span></button>
+  </div>
+  <div class="cur" id="cur" aria-hidden="true"><i class="ring" id="ring"></i><i class="dot" id="dot"></i></div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage = document.getElementById('stage'), head = document.getElementById('head'), helmet = document.getElementById('helmet'), push = document.getElementById('push');
+  var CLIP = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/e1b48476-24ab-456a-bb12-13e63bc60973.mp4';
+
+  /* ---------- head clip: blob for instant seeks ---------- */
+  var target = 0.5, shown = 0.5, dur = 0, lastMove = performance.now(), firstSeek = false;
+  function frameRect() { var f = document.querySelector('.frame').getBoundingClientRect(); return f; }
+  if (!reduced) {
+    fetch(CLIP).then(function (r) { if (!r.ok) throw 0; return r.blob(); }).then(function (b) { head.src = URL.createObjectURL(b); }).catch(function () { head.src = CLIP; });
+    head.addEventListener('loadedmetadata', function () { dur = head.duration || 5; head.currentTime = dur * 0.5; });
+    head.addEventListener('seeked', function () { if (!firstSeek) { firstSeek = true; head.classList.add('on'); } });
+    window.__lumora = { get target() { return target; }, get shown() { return shown; }, get time() { return head.currentTime; }, get dur() { return dur; } };
+  }
+  function onPointer(x) {
+    var f = frameRect(); var p = (x - f.left) / f.width;
+    target = Math.min(1, Math.max(0, (p - .14) / (.86 - .14)));
+    lastMove = performance.now();
+  }
+  function loop() {
+    requestAnimationFrame(loop);
+    if (reduced) return;
+    var now = performance.now();
+    if (now - lastMove > 3500) target = 0.5 + Math.sin((now - lastMove - 3500) / 1000 * 0.9) * 0.32;
+    shown += (target - shown) * 0.14;
+    if (dur && !head.seeking && head.readyState >= 1) {
+      var t = Math.min(dur - 0.02, Math.max(0, shown * dur));
+      if (Math.abs(head.currentTime - t) > 0.004) head.currentTime = t;
+    }
+    // cursor ring eases after the dot
+    rx += (mx - rx) * 0.55; ry += (my - ry) * 0.55;
+    ring.style.transform = 'translate(' + rx.toFixed(1) + 'px,' + ry.toFixed(1) + 'px) translate(-50%,-50%)';
+  }
+
+  /* ---------- cursor ---------- */
+  var dot = document.getElementById('dot'), ring = document.getElementById('ring');
+  var mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+  window.addEventListener('pointermove', function (e) {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)';
+    onPointer(e.clientX);
+  }, { passive: true });
+  window.addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) onPointer(t.clientX); }, { passive: true });
+  loop();
+
+  /* ---------- helmet ---------- */
+  var on = false, helmetAnim = null;
+  push.addEventListener('click', function () {
+    push.animate([{ transform: 'scale(1)' }, { transform: 'scale(.88)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+    on = !on;
+    push.classList.toggle('on', on); push.setAttribute('aria-pressed', String(on));
+    if (helmetAnim) helmetAnim.cancel();
+    var u = Math.max(innerWidth / 1440, innerHeight / 810);
+    helmet.classList.add('show');
+    var frames = [{ opacity: 0, transform: 'translateY(' + (-70 * u) + 'px)' }, { opacity: 1, transform: 'translateY(' + (6 * u) + 'px)', offset: .78 }, { opacity: 1, transform: 'none' }];
+    helmetAnim = helmet.animate(frames, { duration: 720, easing: 'cubic-bezier(.22,.9,.25,1)', fill: 'forwards', direction: on ? 'normal' : 'reverse' });
+    helmetAnim.onfinish = function () { if (!on) helmet.classList.remove('show'); };
+  });
+
+  /* ---------- entrance ---------- */
+  if (reduced || !('animate' in root)) { root.classList.remove('pre'); return; }
+  var EXPO = 'cubic-bezier(.16,1,.3,1)', SOFT = 'cubic-bezier(.22,.75,.2,1)', POP = 'cubic-bezier(.34,1.56,.64,1)';
+  var anims = [];
+  function play(el, frames, opts) { if (!el) return; anims.push(el.animate(frames, Object.assign({ fill: 'both' }, opts))); }
+  var $ = function (s) { return document.querySelector(s); };
+  function run() {
+    play($('.logo'), [{ opacity: 0, transform: 'translateY(-14px)' }, { opacity: 1, transform: 'none' }], { delay: 40, duration: 650, easing: SOFT });
+    play($('.menu'), [{ opacity: 0, transform: 'translateY(-14px)' }, { opacity: 1, transform: 'none' }], { delay: 140, duration: 650, easing: SOFT });
+    play($('.eyebrow'), [{ opacity: 0, letterSpacing: '.9em' }, { opacity: 1, letterSpacing: '.46em' }], { delay: 300, duration: 900, easing: EXPO });
+    play($('.headline'), [{ opacity: 0, filter: 'blur(14px)', transform: 'translateY(22px)' }, { opacity: 1, filter: 'blur(0px)', transform: 'none' }], { delay: 480, duration: 1000, easing: EXPO });
+    play($('.subtitle'), [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { delay: 900, duration: 650, easing: SOFT });
+    play($('.cap--l'), [{ opacity: 0 }, { opacity: 1 }], { delay: 1050, duration: 600, easing: SOFT });
+    play($('.cap--r'), [{ opacity: 0 }, { opacity: 1 }], { delay: 1150, duration: 600, easing: SOFT });
+    play($('.push'), [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], { delay: 1300, duration: 600, easing: POP });
+    root.classList.remove('pre');
+    var done = false;
+    function finish() { if (done) return; done = true; anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); root.classList.remove('pre'); }
+    Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); })).then(finish);
+    setTimeout(finish, 4000);
+  }
+  var fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 700); })]).then(function () { requestAnimationFrame(run); });
+})();
+</script>
+</body>
+</html>
